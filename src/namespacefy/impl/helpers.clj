@@ -87,8 +87,3 @@
 
      :default
      (throw (AssertionError. "Unsupported data, cannot unnamespacefy.")))))
-
-(defn get-un [map-x key]
-  (let [all-keys (keys map-x)
-        unnamespacefied-keywords (map unnamespacefy-keyword all-keys)])
-  )
