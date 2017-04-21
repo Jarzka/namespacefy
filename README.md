@@ -18,8 +18,7 @@ Add the following line to your Leiningen project:
 
 # Usage
 
-To namespacefy a map or a vector of maps, use the namespacefy function. It accepts maps, vectors and keywords.
-
+To namespacefy a map, a keyword or a vector of maps, use the namespacefy function:
 
 ```clojure
 (def data {:name "Seppo"
