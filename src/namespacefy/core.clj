@@ -39,3 +39,12 @@
   ([data] (unnamespacefy data {}))
   ([data options]
    (helpers/unnamespacefy data options)))
+
+(defn get-un
+  "Returns the key which matches to the given keyword after unnamespacefying.
+
+   This helper can be useful if you want to build a function which supports multiple
+   namespaced keywords that contain the same regular part. For example, getting the name of both
+   :product.domain.player/name and :product.domain.task/name is easy with get-un."
+  [map key]
+  (helpers/get-un map key))

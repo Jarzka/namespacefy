@@ -20,15 +20,19 @@
 (defn- validate-map-to-be-namespacefyed [map-x options]
   (assert (:ns options) "Must provide default namespace"))
 
+(defn- original-keys->namespaced-keys [original-keys options]
+  (apply merge (map
+                 #(-> {% (namespacefy-keyword % options)})
+                 original-keys)))
+
 (defn- namespacefy-map [map-x {:keys [ns except custom inner] :as options}]
   (validate-map-to-be-namespacefyed map-x options)
   (let [except (or except #{})
         custom (or custom {})
         inner (or inner {})
         keys-to-be-modified (filter (comp not except) (keys map-x))
-        original-keyword->namespaced-keyword (apply merge (map
-                                                            #(-> {% (namespacefy-keyword % options)})
-                                                            keys-to-be-modified))
+        original-keyword->namespaced-keyword (original-keys->namespaced-keys keys-to-be-modified
+                                                                             options)
         namespacefied-inner-maps (apply merge (map
                                                 #(-> {% (namespacefy (% map-x) (% inner))})
                                                 (keys inner)))
@@ -51,15 +55,18 @@
     :default
     (throw (AssertionError. "Unsupported data, cannot namespacefy."))))
 
+(defn- original-keys>unnamespaced-keys [original-keys]
+  (apply merge (map
+                 #(-> {% (unnamespacefy-keyword %)})
+                 original-keys)))
+
 (defn- unnamespacefy-map
   [map-x {:keys [except recur?] :as options}]
   (validate-map-to-be-unnamespacefyed map-x)
   (let [except (or except #{})
         recur? (or recur? false)
         keys-to-be-modified (filter (comp not except) (keys map-x))
-        original-keyword->unnamespaced-keyword (apply merge (map
-                                                              #(-> {% (unnamespacefy-keyword %)})
-                                                              keys-to-be-modified))
+        original-keyword->unnamespaced-keyword (original-keys>unnamespaced-keys keys-to-be-modified)
         keys-to-inner-maps (filter (fn [avain]
                                      (let [sisalto (avain map-x)]
                                        (or (map? sisalto) (vector? sisalto))))
@@ -87,3 +94,9 @@
 
      :default
      (throw (AssertionError. "Unsupported data, cannot unnamespacefy.")))))
+
+(defn get-un [map-x key]
+  (validate-map-to-be-unnamespacefyed map-x)
+  (let [all-keys (keys map-x)
+        best-match (first (filter #(= (unnamespacefy %) key) all-keys))]
+    (best-match map-x)))

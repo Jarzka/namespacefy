@@ -1,7 +1,7 @@
 (ns namespacefy.core-test
   (:require
     [clojure.test :refer :all]
-    [namespacefy.core :refer [namespacefy unnamespacefy]]))
+    [namespacefy.core :refer [namespacefy unnamespacefy get-un]]))
 
 (deftest namespacefy-keyword
   (is (= (namespacefy :address {:ns :product.domain}) :product.domain/address))
@@ -132,3 +132,16 @@
 (deftest unnamespacefy-bad-data
   (is (thrown? AssertionError (unnamespacefy nil)))
   (is (thrown? AssertionError (unnamespacefy 123))))
+
+(defn- get-name [data]
+  (get-un data :name))
+
+(deftest get-un-works
+  (is (= (get-name {:product.domain.player/name "Player"})
+         "Player"))
+  (is (= (get-name {:product.domain.task/name "The Task"})
+         "The Task"))
+  (is (= (get-name {:name "The Task"})
+         "The Task"))
+  (is (thrown? AssertionError (get-name {:product.domain.player/name "Player"
+                                          :product.domain.task/name "The Task"}))))

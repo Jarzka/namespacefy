@@ -55,6 +55,12 @@ To unnamespacefy the sama data, use the unnamespacefy function. It also supports
 
 There are also other helper functions available:
 
+```clojure
+;; Get the specific key from a map, regardless if it is namespaced or not:
+(get-un {:product.domain.player/name "Seppo"} :name) ; => "Seppo"
+(get-un {:product.domain.task/name "The Task"} :name) ; => "The Task"
 
+
+```
 
 For more information on the available options, please read the function documentations at the core.
