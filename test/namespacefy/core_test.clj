@@ -1,41 +1,27 @@
 (ns namespacefy.core-test
   (:require
     [clojure.test :refer :all]
-    [namespacefy.core :refer [namespacefy unnamespacefy
-                              namespacefy-keyword
-                              unnamespacefy-keyword]]))
+    [namespacefy.core :refer [namespacefy unnamespacefy]]))
 
-(deftest namespacefy-namespaced-keyword-with-bad-data
-  (is (thrown? AssertionError (namespacefy-keyword :product.domain.address {:address "Something"})))
-  (is (thrown? AssertionError (namespacefy-keyword :product.domain.address nil)))
-  (is (thrown? AssertionError (namespacefy-keyword ":product.domain.address" :keyword)))
-  (is (thrown? AssertionError (namespacefy-keyword nil :keyword)))
-  (is (thrown? AssertionError (namespacefy-keyword :product.domain.address "keyword"))))
+(deftest namespacefy-keyword
+  (is (= (namespacefy :address {:ns :product.domain}) :product.domain/address))
+  (is (= (namespacefy :address {:ns :product.domain}) :product.domain/address)))
 
-(deftest namespacefy-namespaced-keyword
-  (is (= (namespacefy-keyword :product.domain :address) :product.domain/address))
-  (is (= (namespacefy-keyword :product.domain :address) :product.domain/address)))
-
-(deftest unnamespacefy-namespaced-keyword-with-bad-data
-  (is (thrown? AssertionError (unnamespacefy-keyword {:address "Something"})))
-  (is (thrown? AssertionError (unnamespacefy-keyword nil)))
-  (is (thrown? AssertionError (unnamespacefy-keyword "keyword"))))
-
-(deftest unnamespacefy-namespaced-keyword
-  (is (= (unnamespacefy-keyword :product.domain.person/address) :address))
-  (is (= (unnamespacefy-keyword :address) :address)))
+(deftest unnamespacefy-keyword
+  (is (= (unnamespacefy :product.domain.person/address) :address))
+  (is (= (unnamespacefy :address) :address)))
 
 (deftest namespacefy-with-same-regular-keywords
   (is (thrown? AssertionError (unnamespacefy {:product.domain.person/name "Seppo"
                                               :product.domain.task/name "Useless task"}))))
 
-(deftest namespacefy-with-simple-map
+(deftest namespacefy-simple-map
   (is (= (namespacefy {:name "Seppo" :id 1}
                       {:ns :product.domain.person})
          {:product.domain.person/name "Seppo"
           :product.domain.person/id 1})))
 
-(deftest namespacefy-with-nested-map
+(deftest namespacefy-nested-map
   (is (= (namespacefy {:name "Seppo"
                        :id 1
                        :address {:address "Pihlajakatu 23"
@@ -55,7 +41,7 @@
           :foo nil
           :our.ui/modified nil})))
 
-(deftest namespacefy-with-deeply-nested-map
+(deftest namespacefy-deeply-nested-map
   (is (= (namespacefy {:name "Seppo"
                        :id 1
                        :address {:address "Pihlajakatu 23"
@@ -98,7 +84,7 @@
           :foo nil
           :our.ui/modified nil})))
 
-(deftest namespacefy-with-vector-of-maps
+(deftest namespacefy-vector-of-maps
   (is (= (namespacefy {:name "Seppo"
                        :id 1
                        :tasks [{:id 6 :description "Do something useful"}
@@ -112,12 +98,15 @@
                                         {:product.domain.task/id 7
                                          :product.domain.task/description "Do something useless"}]})))
 
-(deftest unnamespacefy-with-simple-map
+(deftest namespacefy-empty
+  (is (= (namespacefy {} {:ns :product.domain.person}) {})))
+
+(deftest unnamespacefy-simple-map
   (is (= (unnamespacefy {:product.domain.person/name "Seppo"
                          :product.domain.person/id 1})
          {:name "Seppo" :id 1})))
 
-(deftest unnamespacefy-with-nested-map
+(deftest unnamespacefy-nested-map
   (is (= (unnamespacefy {:product.domain.player/name "Seppo"
                          :product.domain.player/id 1
                          :product.domain.player/tasks {:product.domain.task/id 6}})
@@ -134,3 +123,12 @@
                          :product.domain.player/task {:product.domain.task/id 6}}
                         {:recur? true :except #{:product.domain.player/id}})
          {:name "Seppo" :product.domain.player/id 666 :task {:id 6}})))
+
+(deftest namespacefy-bad-data
+  (is (thrown? AssertionError (namespacefy nil {:ns :product.domain.person})))
+  (is (thrown? AssertionError (namespacefy 123 {:ns :product.domain.person})))
+  (is (thrown? AssertionError (namespacefy {:name "Seppo"} {}))))
+
+(deftest unnamespacefy-bad-data
+  (is (thrown? AssertionError (unnamespacefy nil)))
+  (is (thrown? AssertionError (unnamespacefy 123))))

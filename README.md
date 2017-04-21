@@ -16,7 +16,7 @@ Add the following line to your Leiningen project:
 
 # Usage
 
-To namespacefy a map or a vector of maps, use the namespacefy function:
+To namespacefy a map or a vector of maps, use the namespacefy function. It accepts maps, vectors and keywords.
 
 
 ```clojure
@@ -40,7 +40,7 @@ To namespacefy a map or a vector of maps, use the namespacefy function:
 ;;  :foobar nil}"
 ```
 
-To unnamespacefy the sama data, use the unnamespacefy function:
+To unnamespacefy the sama data, use the unnamespacefy function. It also supports maps, vectors and keywords.
 
 ```clojure
 (unnamespacefy data {:recur? true})
@@ -53,4 +53,8 @@ To unnamespacefy the sama data, use the unnamespacefy function:
 ;;  :foobar nil}
 ```
 
-For more information on the available options, please read the function documentations at the core. It also contains other helper functions that you might be interested in.
+There are also other helper functions available:
+
+
+
+For more information on the available options, please read the function documentations at the core.

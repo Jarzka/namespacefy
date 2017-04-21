@@ -2,11 +2,12 @@
   (:require [namespacefy.impl.helpers :as helpers]))
 
 (defn namespacefy
-  "Adds namespaces in front of keywords.
-   The data can be a map or a vector of maps.
+  "The data can be a map, a vector of maps or a keyword. In all cases, it adds a namespace
+   to the keywords.
 
    Options is a map with the following keywords:
    :ns        Keyword, which provides the default namespace to be used (if exceptions are not provided).
+              If data is a keyword, this is the only option which is taken into account.
    :except    Set of keywords. The name of the keywords are not modified.
    :custom    Map of keywords present in the given data. These keywords are named differently.
    :inner     Map, which provides options for namespacefying inner maps and vectors.
@@ -29,7 +30,8 @@
   (helpers/namespacefy data options))
 
 (defn unnamespacefy
-  "Converts namespaced keywords to regular keywords.
+  "Converts namespaced keywords to regular keywords. The data can be a map, vector of maps or a
+   keyword.
 
   Options is a map with the following keywords:
   except        Set of keywords. The name of the keywords are not modified.
@@ -37,9 +39,3 @@
   ([data] (unnamespacefy data {}))
   ([data options]
    (helpers/unnamespacefy data options)))
-
-(defn namespacefy-keyword [namespace-as-keyword keyword]
-  (helpers/namespacefy-keyword namespace-as-keyword keyword))
-
-(defn unnamespacefy-keyword [keyword]
-  (helpers/unnamespacefy-keyword keyword))

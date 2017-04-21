@@ -5,28 +5,29 @@
 (declare namespacefy)
 (declare unnamespacefy)
 
-(defn namespacefy-keyword [namespace-as-keyword keyword-to-be-modified]
-  (assert (keyword? namespace-as-keyword) "Namespace must be a keyword.")
-  (assert (keyword? keyword-to-be-modified) "Can only namespacefy keywords.")
-  (keyword (str (name namespace-as-keyword) "/" (name keyword-to-be-modified))))
+(defn- namespacefy-keyword [data {:keys [ns] :as options}]
+  (keyword (str (name ns) "/" (name data))))
 
-(defn unnamespacefy-keyword [keyword-to-be-modified]
-  (assert (keyword? keyword-to-be-modified) "Can only unnamespacefy keywords.")
+(defn- unnamespacefy-keyword [keyword-to-be-modified]
   (keyword (name keyword-to-be-modified)))
 
-(defn- validate-map-to-be-unnamespaced [map-x]
+(defn- validate-map-to-be-unnamespacefyed [map-x]
   (let [all-keywords (set (keys map-x))
         unnamespaced-keywords (set (map unnamespacefy-keyword all-keywords))]
     (when (not= (count all-keywords) (count unnamespaced-keywords))
       (throw (AssertionError. "Unnamespacing would result a map with more than one keyword with the same name.")))))
 
+(defn- validate-map-to-be-namespacefyed [map-x options]
+  (assert (:ns options) "Must provide default namespace"))
+
 (defn- namespacefy-map [map-x {:keys [ns except custom inner] :as options}]
+  (validate-map-to-be-namespacefyed map-x options)
   (let [except (or except #{})
         custom (or custom {})
         inner (or inner {})
         keys-to-be-modified (filter (comp not except) (keys map-x))
         original-keyword->namespaced-keyword (apply merge (map
-                                                            #(-> {% (namespacefy-keyword ns %)})
+                                                            #(-> {% (namespacefy-keyword % options)})
                                                             keys-to-be-modified))
         namespacefied-inner-maps (apply merge (map
                                                 #(-> {% (namespacefy (% map-x) (% inner))})
@@ -37,15 +38,22 @@
     (set/rename-keys map-x-with-modified-inner-maps final-rename-logic)))
 
 (defn namespacefy [data options]
-  (cond (map? data)
-        (namespacefy-map data options)
+  (cond
+    (keyword? data)
+    (namespacefy-keyword data options)
 
-        (vector? data)
-        (mapv #(namespacefy-map % options) data)))
+    (map? data)
+    (namespacefy-map data options)
+
+    (vector? data)
+    (mapv #(namespacefy-map % options) data)
+
+    :default
+    (throw (AssertionError. "Unsupported data, cannot namespacefy."))))
 
 (defn- unnamespacefy-map
   [map-x {:keys [except recur?] :as options}]
-  (validate-map-to-be-unnamespaced map-x)
+  (validate-map-to-be-unnamespacefyed map-x)
   (let [except (or except #{})
         recur? (or recur? false)
         keys-to-be-modified (filter (comp not except) (keys map-x))
@@ -67,8 +75,20 @@
 (defn unnamespacefy
   ([data] (unnamespacefy data {}))
   ([data options]
-   (cond (map? data)
-         (unnamespacefy-map data options)
+   (cond
+     (keyword? data)
+     (unnamespacefy-keyword data)
 
-         (vector? data)
-         (mapv #(unnamespacefy-map % options) data))))
+     (map? data)
+     (unnamespacefy-map data options)
+
+     (vector? data)
+     (mapv #(unnamespacefy-map % options) data)
+
+     :default
+     (throw (AssertionError. "Unsupported data, cannot unnamespacefy.")))))
+
+(defn get-un [map-x key]
+  (let [all-keys (keys map-x)
+        unnamespacefied-keywords (map unnamespacefy-keyword all-keys)])
+  )
