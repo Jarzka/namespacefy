@@ -48,3 +48,9 @@
    :product.domain.player/name and :product.domain.task/name is easy with get-un."
   [map key]
   (helpers/get-un map key))
+
+(defn assoc-un
+  "Assocs the data to the given keyword which matches any namespaced or
+   unnamespaced keyword."
+  [map key data]
+  (helpers/assoc-un map key data))

@@ -1,7 +1,8 @@
 (ns namespacefy.core-test
   (:require
     [clojure.test :refer :all]
-    [namespacefy.core :refer [namespacefy unnamespacefy get-un]]))
+    [namespacefy.core :refer [namespacefy unnamespacefy
+                              get-un assoc-un]]))
 
 (deftest namespacefy-keyword
   (is (= (namespacefy :address {:ns :product.domain}) :product.domain/address))
@@ -12,8 +13,8 @@
   (is (= (unnamespacefy :address) :address)))
 
 (deftest namespacefy-with-same-regular-keywords
-  (is (thrown? AssertionError (unnamespacefy {:product.domain.person/name "Seppo"
-                                              :product.domain.task/name "Useless task"}))))
+  (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.person/name "Seppo"
+                                                        :product.domain.task/name "Useless task"}))))
 
 (deftest namespacefy-simple-map
   (is (= (namespacefy {:name "Seppo" :id 1}
@@ -125,23 +126,33 @@
          {:name "Seppo" :product.domain.player/id 666 :task {:id 6}})))
 
 (deftest namespacefy-bad-data
-  (is (thrown? AssertionError (namespacefy nil {:ns :product.domain.person})))
-  (is (thrown? AssertionError (namespacefy 123 {:ns :product.domain.person})))
-  (is (thrown? AssertionError (namespacefy {:name "Seppo"} {}))))
+  (is (thrown? IllegalArgumentException (namespacefy nil {:ns :product.domain.person})))
+  (is (thrown? IllegalArgumentException (namespacefy 123 {:ns :product.domain.person})))
+  (is (thrown? IllegalArgumentException (namespacefy {:name "Seppo"} {}))))
 
 (deftest unnamespacefy-bad-data
-  (is (thrown? AssertionError (unnamespacefy nil)))
-  (is (thrown? AssertionError (unnamespacefy 123))))
-
-(defn- get-name [data]
-  (get-un data :name))
+  (is (thrown? IllegalArgumentException (unnamespacefy nil)))
+  (is (thrown? IllegalArgumentException (unnamespacefy 123))))
 
 (deftest get-un-works
-  (is (= (get-name {:product.domain.player/name "Player"})
-         "Player"))
-  (is (= (get-name {:product.domain.task/name "The Task"})
-         "The Task"))
-  (is (= (get-name {:name "The Task"})
-         "The Task"))
-  (is (thrown? AssertionError (get-name {:product.domain.player/name "Player"
-                                          :product.domain.task/name "The Task"}))))
+  (is (= (get-un {:product.domain.player/name "Player"} :name) "Player"))
+  (is (= (get-un {:product.domain.player/name "The Task"} :name) "The Task"))
+  (is (= (get-un {:name "The Task"} :name) "The Task"))
+  (is (= (get-un nil :name) nil))
+  (is (thrown? IllegalArgumentException (get-un {:product.domain.player/name "Player"
+                                                   :product.domain.task/name "The Task"}
+                                                :name)))
+  (is (thrown? IllegalArgumentException (get-un {:product.domain.player/name "Player"
+                                                 :product.domain.task/name "The Task"}
+                                                123))))
+
+(deftest assoc-un-works
+  (is (= (assoc-un {:product.domain.player/name "Player"} :name "Player Zero")
+         {:product.domain.player/name "Player Zero"}))
+  (is (= (assoc-un {:product.domain.task/name "The Task"} :name "The Task 123")
+         {:product.domain.task/name "The Task 123"}))
+  (is (= (assoc-un {:name "Player"} :name "Player Zero")
+         {:name "Player Zero"}))
+  (is (= (assoc-un nil :name "Player Zero")
+         {:name "Player Zero"}))
+  (is (thrown? IllegalArgumentException (assoc-un {} 123 "Player Zero"))))
