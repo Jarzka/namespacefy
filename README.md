@@ -1,5 +1,7 @@
 # `namespacefy`
 
+[![Clojars Project](https://img.shields.io/clojars/v/namespacefy.svg)](https://clojars.org/namespacefy)
+
 # Introduction
 
 namespacefy is a simple Clojure library which aims to make it easy to keep keys namespacefied.
