@@ -4,7 +4,7 @@
 
 # Introduction
 
-namespacefy is a simple Clojure library which aims to make it easy to keep keys namespacefied.
+namespacefy is a simple Clojure library which aims to make it easy to keep keys namespaced.
 
 When data is fetched from a database or received from an external system, the output is often a map with unnamespaced keywords. This is often the desired end result. However, to avoid naming conflicts, it is recommended to use namespaced keywords in Clojure. This library aims to solve this problem by providing simple helper functions to convert keys in maps to namespaced keywords, no matter where your data comes from. When the namespacing is not needed anymore, for example if you want to send it to your JSON-loving neighbour, unnamespacing can be done easily before JSON conversion.
 
