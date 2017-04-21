@@ -60,9 +60,11 @@ There are also other helper functions available:
 (get-un {:product.domain.player/name "Seppo"} :name) ; => "Seppo"
 (get-un {:product.domain.task/name "The Task"} :name) ; => "The Task"
 
-;; Assoc the data to the given keyword which matches any namespaced orunnamespaced keyword.
-(assoc-un {:product.domain.player/name "Seppo"} :name "Ismo") ; => {:product.domain.player/name "Ismo"}
-(assoc-un {:product.domain.task/name "The Task"} :name "The Task 123") ; => {:product.domain.task/name "The Task 123"}
+;; Assoc the data to the given keyword which matches any namespaced or unnamespaced keyword.
+(assoc-un {:product.domain.player/name "Seppo"} :name "Ismo")
+;; => {:product.domain.player/name "Ismo"}
+(assoc-un {:product.domain.task/name "The Task"} :name "The Task 123")
+;; => {:product.domain.task/name "The Task 123"}
 ```
 
 For more information on the available options, please read the function documentations at the core.
