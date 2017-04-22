@@ -33,7 +33,7 @@ To namespacefy a map, a keyword or a vector of maps, use the namespacefy functio
                    :inner {:tasks {:ns :product.domain.task}}})
 
 ;; We get the following output:
-;; {:product.domain.player/name "player1"
+;; {:product.domain.player/name "Seppo"
 ;;  :product.domain.player/ip 1
 ;;  :product.domain.player/tasks {:product.domain.task/id 666
 ;;                                :product.domain.task/time 5}
