@@ -159,6 +159,7 @@
   (is (thrown? IllegalArgumentException (get-un {:product.domain.player/name "Player"
                                                  :product.domain.task/name "The Task"}
                                                 123)))
+
   ;; Map is not a map or the keys are not keywords
   (is (thrown? IllegalArgumentException (get-un 123 :name)))
   (is (thrown? IllegalArgumentException (get-un {"1" "hello"} :name)))
@@ -175,6 +176,7 @@
          {:product.domain.task/name "The Task 123"}))
   (is (= (assoc-un {:name "Player"} :name "Player Zero")
          {:name "Player Zero"}))
+
   ;; Map is nil or empty
   (is (= (assoc-un nil :name "Player Zero")
          {:name "Player Zero"}))
@@ -184,10 +186,13 @@
          {1 :a})))
 
 (deftest assoc-un-works-correctly-with-bad-data
-  (is (thrown? IllegalArgumentException (assoc-un 123 123 "Player Zero")))
-  (is (thrown? IllegalArgumentException (assoc-un [] 123 "Player Zero")))
+  ;; Unable to resolve the correct key
   (is (thrown? IllegalArgumentException (assoc-un {:product.domain.task/name "The Task"
                                                    :product.domain.player/name "Seppo"}
                                                   :name "Which one!?")))
+
+  ;; Map is not a map or the keys are not keywords
+  (is (thrown? IllegalArgumentException (assoc-un 123 123 "Player Zero")))
+  (is (thrown? IllegalArgumentException (assoc-un [] 123 "Player Zero")))
   (is (thrown? IllegalArgumentException (assoc-un {"name" "Player"} "name" "Player Zero")))
   (is (thrown? IllegalArgumentException (assoc-un "Hello" 123 "Player Zero"))))
