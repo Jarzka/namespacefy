@@ -2,7 +2,7 @@
 
 [![Clojars Project](https://img.shields.io/clojars/v/namespacefy.svg)](https://clojars.org/namespacefy)  
 
-[API documentation](https://kauko.github.io/namespacefy/docs/)
+[API documentation](https://jarzka.github.io/namespacefy/docs/)
 
 namespacefy is a simple Clojure(Script) library which aims to make it easy to keep keys namespaced.
 
