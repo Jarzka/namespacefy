@@ -72,3 +72,7 @@ There are also other helper functions available:
 ```
 
 For more information on the available options, please read the function documentations at the core.
+
+# Changelog
+
+Here: https://github.com/Jarzka/namespacefy/releases
