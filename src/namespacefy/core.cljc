@@ -42,6 +42,8 @@
 
 (defn get-un
   "Returns the key which matches to the given keyword after unnamespacefying.
+   The keys of the given map should be keywords and there should be only one
+   possible match.
 
    This helper can be useful if you want to build a function which supports multiple
    namespaced keywords that contain the same regular part. For example, getting the name of both
@@ -50,7 +52,8 @@
   (helpers/get-un map key))
 
 (defn assoc-un
-  "Assocs the data to the given keyword which matches any namespaced or
-   unnamespaced keyword."
+  "Assocs the data to the given keyword which matches the corresponding namespaced or
+   unnamespaced keyword. The keys of the given map should be keywords and
+   there should be only one possible match."
   [map key data]
   (helpers/assoc-un map key data))
