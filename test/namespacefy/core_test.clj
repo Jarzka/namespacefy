@@ -135,24 +135,59 @@
   (is (thrown? IllegalArgumentException (unnamespacefy 123))))
 
 (deftest get-un-works
+  ;; Basic tests
   (is (= (get-un {:product.domain.player/name "Player"} :name) "Player"))
   (is (= (get-un {:product.domain.player/name "The Task"} :name) "The Task"))
   (is (= (get-un {:name "The Task"} :name) "The Task"))
-  (is (= (get-un nil :name) nil))
+
+  ;; Key is not present in the map -> nil
+  (is (= (get-un {:name "The Task"} :id) nil))
+  (is (= (get-un {:product.domain.player/name "Player"} :id) nil))
+  (is (= (get-un {:name "The Task"} "name") nil))
+  (is (= (get-un {:name "The Task"} 1) nil))
+
+  ;; If the map is nil, should always return nil
+  (is (= (get-un nil 1) nil))
+  (is (= (get-un nil "name") nil))
+  (is (= (get-un nil :name) nil)))
+
+(deftest get-un-works-correctly-with-bad-data
+  ;; Unable to resolve the correct key
   (is (thrown? IllegalArgumentException (get-un {:product.domain.player/name "Player"
-                                                   :product.domain.task/name "The Task"}
+                                                 :product.domain.task/name "The Task"}
                                                 :name)))
   (is (thrown? IllegalArgumentException (get-un {:product.domain.player/name "Player"
                                                  :product.domain.task/name "The Task"}
-                                                123))))
+                                                123)))
+  ;; Map is not a map or the keys are not keywords
+  (is (thrown? IllegalArgumentException (get-un 123 :name)))
+  (is (thrown? IllegalArgumentException (get-un {"1" "hello"} :name)))
+  (is (thrown? IllegalArgumentException (get-un {"1" "hello"} "1")))
+  (is (thrown? IllegalArgumentException (get-un {1 "hello"} :name)))
+  (is (thrown? IllegalArgumentException (get-un {1 "hello"} 1)))
+  (is (thrown? IllegalArgumentException (get-un 123 123))))
 
 (deftest assoc-un-works
+  ;; Basic tests
   (is (= (assoc-un {:product.domain.player/name "Player"} :name "Player Zero")
          {:product.domain.player/name "Player Zero"}))
   (is (= (assoc-un {:product.domain.task/name "The Task"} :name "The Task 123")
          {:product.domain.task/name "The Task 123"}))
   (is (= (assoc-un {:name "Player"} :name "Player Zero")
          {:name "Player Zero"}))
+  ;; Map is nil or empty
   (is (= (assoc-un nil :name "Player Zero")
          {:name "Player Zero"}))
-  (is (thrown? IllegalArgumentException (assoc-un {} 123 "Player Zero"))))
+  (is (= (assoc-un nil 1 :a)
+         {1 :a}))
+  (is (= (assoc-un {} 1 :a)
+         {1 :a})))
+
+(deftest assoc-un-works-correctly-with-bad-data
+  (is (thrown? IllegalArgumentException (assoc-un 123 123 "Player Zero")))
+  (is (thrown? IllegalArgumentException (assoc-un [] 123 "Player Zero")))
+  (is (thrown? IllegalArgumentException (assoc-un {:product.domain.task/name "The Task"
+                                                   :product.domain.player/name "Seppo"}
+                                                  :name "Which one!?")))
+  (is (thrown? IllegalArgumentException (assoc-un {"name" "Player"} "name" "Player Zero")))
+  (is (thrown? IllegalArgumentException (assoc-un "Hello" 123 "Player Zero"))))
