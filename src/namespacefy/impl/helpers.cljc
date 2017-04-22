@@ -5,6 +5,11 @@
 (declare namespacefy)
 (declare unnamespacefy)
 
+(defn- throw-exception [message]
+  #?(:cljs (throw (js/Error. message))
+     :clj  (throw (IllegalArgumentException. message))))
+
+
 (defn- namespacefy-keyword [data {:keys [ns] :as options}]
   (keyword (str (name ns) "/" (name data))))
 
@@ -12,15 +17,15 @@
   (keyword (name keyword-to-be-modified)))
 
 (defn- validate-map-to-be-unnamespacefyed [map-x]
-  (when-not (map? map-x) (throw (IllegalArgumentException. "Argument must be a map")))
+  (when-not (map? map-x) (throw-exception "Argument must be a map"))
   (let [all-keywords (set (keys map-x))
         unnamespaced-keywords (set (map unnamespacefy-keyword all-keywords))]
     (when (not= (count all-keywords) (count unnamespaced-keywords))
-      (throw (IllegalArgumentException. "Unnamespacing would result a map with more than one keyword with the same name.")))))
+      (throw-exception "Unnamespacing would result a map with more than one keyword with the same name."))))
 
 (defn- validate-map-to-be-namespacefyed [map-x options]
-  (when-not (map? map-x) (throw (IllegalArgumentException. "Argument must be a map")))
-  (when-not (:ns options) (throw (IllegalArgumentException. "Must provide default namespace"))))
+  (when-not (map? map-x) (throw-exception "Argument must be a map"))
+  (when-not (:ns options) (throw-exception "Must provide default namespace")))
 
 (defn- original-keys->namespaced-keys [original-keys options]
   (apply merge (map
@@ -55,7 +60,7 @@
     (mapv #(namespacefy-map % options) data)
 
     :default
-    (throw (IllegalArgumentException. "Unsupported data, cannot namespacefy."))))
+    (throw-exception "Unsupported data, cannot namespacefy.")))
 
 (defn- original-keys>unnamespaced-keys [original-keys]
   (apply merge (map
@@ -95,12 +100,12 @@
      (mapv #(unnamespacefy-map % options) data)
 
      :default
-     (throw (IllegalArgumentException. "Unsupported data, cannot unnamespacefy.")))))
+     (throw-exception "Unsupported data, cannot unnamespacefy."))))
 
 (defn get-un [map-x key]
   (when map-x
     (validate-map-to-be-unnamespacefyed map-x)
-    (when-not (keyword? key) (throw (IllegalArgumentException. "Key must be a key")))
+    (when-not (keyword? key) (throw-exception "Key must be a key"))
     (let [all-keys (keys map-x)
           best-match (first (filter #(= (unnamespacefy %) key) all-keys))]
       (best-match map-x))))
@@ -110,7 +115,7 @@
     (assoc map-x key data)
     (do
       (validate-map-to-be-unnamespacefyed map-x)
-      (when-not (keyword? key) (throw (IllegalArgumentException. "Key must be a key")))
+      (when-not (keyword? key) (throw-exception "Key must be a key"))
       (let [all-keys (keys map-x)
             best-match (first (filter #(= (unnamespacefy %) key) all-keys))]
         (assoc map-x best-match data)))))
