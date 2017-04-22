@@ -60,12 +60,15 @@ There are also other helper functions available:
 ;; Get the specific key from a map, regardless if it is namespaced or not:
 (get-un {:product.domain.player/name "Seppo"} :name) ; => "Seppo"
 (get-un {:product.domain.task/name "The Task"} :name) ; => "The Task"
+(get-un {:name "The Task"} :name) ; => "The Task"
 
-;; Assoc the data to the given keyword which matches any namespaced or unnamespaced keyword.
+;; Assoc the data to the given keyword which matches the corresponding namespaced or unnamespaced keyword.
 (assoc-un {:product.domain.player/name "Seppo"} :name "Ismo")
 ;; => {:product.domain.player/name "Ismo"}
 (assoc-un {:product.domain.task/name "The Task"} :name "The Task 123")
 ;; => {:product.domain.task/name "The Task 123"}
+(assoc-un {:name "The Task"} :name "The Task 123")
+;; => {:name "The Task 123"}
 ```
 
 For more information on the available options, please read the function documentations at the core.
