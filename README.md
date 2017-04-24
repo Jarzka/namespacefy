@@ -15,7 +15,7 @@ When data is fetched from a database or received from an external system, the ou
 Add the following line to your Leiningen project:
 
 ```clj
-[namespacefy "0.2"]
+[namespacefy "0.2.2"]
 ```
 
 # Usage
@@ -35,7 +35,7 @@ To namespacefy a map, a keyword or a vector of maps, use the namespacefy functio
                    :inner {:tasks {:ns :product.domain.task}}})
 
 ;; We get the following output:
-;; {:product.domain.player/name "player1"
+;; {:product.domain.player/name "Seppo"
 ;;  :product.domain.player/ip 1
 ;;  :product.domain.player/tasks {:product.domain.task/id 666
 ;;                                :product.domain.task/time 5}
@@ -73,4 +73,8 @@ There are also other helper functions available:
 ;; => {:name "The Task 123"}
 ```
 
-For more information on the available options, please read the function documentations at the core.
+For more information on the available options, please read the [API documentation](https://jarzka.github.io/namespacefy/docs/).
+
+# Changelog
+
+Here: https://github.com/Jarzka/namespacefy/releases

@@ -10,10 +10,14 @@
      :clj  (throw (IllegalArgumentException. message))))
 
 
-(defn- namespacefy-keyword [data {:keys [ns] :as options}]
-  (keyword (str (name ns) "/" (name data))))
+(defn- namespacefy-keyword [keyword-to-be-modified {:keys [ns] :as options}]
+  (when-not (keyword? keyword-to-be-modified)
+    (throw-exception "The argument should be a keyword"))
+  (keyword (str (name ns) "/" (name keyword-to-be-modified))))
 
 (defn- unnamespacefy-keyword [keyword-to-be-modified]
+  (when-not (keyword? keyword-to-be-modified)
+    (throw-exception "The argument should be a keyword"))
   (keyword (name keyword-to-be-modified)))
 
 (defn- validate-map-to-be-unnamespacefyed [map-x]
@@ -105,17 +109,16 @@
 (defn get-un [map-x key]
   (when map-x
     (validate-map-to-be-unnamespacefyed map-x)
-    (when-not (keyword? key) (throw-exception "Key must be a key"))
     (let [all-keys (keys map-x)
           best-match (first (filter #(= (unnamespacefy %) key) all-keys))]
-      (best-match map-x))))
+      (get map-x best-match))))
 
 (defn assoc-un [map-x key data]
-  (if (nil? map-x)
+  (if (or (nil? map-x)
+          (and (map? map-x) (empty? map-x)))
     (assoc map-x key data)
     (do
       (validate-map-to-be-unnamespacefyed map-x)
-      (when-not (keyword? key) (throw-exception "Key must be a key"))
       (let [all-keys (keys map-x)
             best-match (first (filter #(= (unnamespacefy %) key) all-keys))]
         (assoc map-x best-match data)))))
