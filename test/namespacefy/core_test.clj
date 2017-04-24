@@ -209,11 +209,19 @@
 
   ;; Map is nil or empty
   (is (= (assoc-un nil :name "Player Zero")
-         {:name "Player Zero"}))
+         nil))
   (is (= (assoc-un nil 1 :a)
-         {1 :a}))
+         nil))
   (is (= (assoc-un {} 1 :a)
-         {1 :a})))
+         {}))
+
+  ;; Key is not present in the map
+  (is (= (assoc-un {:foo :bar} :name "Seppo")
+         {:foo :bar}))
+  (is (= (assoc-un {:foo :bar} nil "Seppo")
+         {:foo :bar}))
+  (is (= (assoc-un {:foo :bar} {} {})
+         {:foo :bar})))
 
 (deftest assoc-un-works-correctly-with-bad-data
   ;; Unable to resolve the correct key

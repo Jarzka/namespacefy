@@ -122,9 +122,11 @@
 (defn assoc-un [map-x key data]
   (if (or (nil? map-x)
           (and (map? map-x) (empty? map-x)))
-    (assoc map-x key data)
+    map-x
     (do
       (validate-map-to-be-unnamespacefyed map-x)
       (let [all-keys (keys map-x)
             best-match (first (filter #(= (unnamespacefy %) key) all-keys))]
-        (assoc map-x best-match data)))))
+        (if best-match
+          (assoc map-x best-match data)
+          map-x)))))
