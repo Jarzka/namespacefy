@@ -111,7 +111,7 @@
   (is (= (namespacefy {} {:ns :product.domain.person}) {})))
 
 (deftest namespacefy-bad-data
-  (is (thrown? IllegalArgumentException (namespacefy nil {:ns :product.domain.person})))
+  (is (thrown? IllegalArgumentException (namespacefy \k {:ns :product.domain.person})))
   (is (thrown? IllegalArgumentException (namespacefy 123 {:ns :product.domain.person})))
   (is (thrown? IllegalArgumentException (namespacefy {:name "Seppo"} {}))))
 
@@ -144,9 +144,21 @@
   (is (= (unnamespacefy :product.domain.person/address) :address))
   (is (= (unnamespacefy :address) :address)))
 
+(deftest unnamespacefy-nil
+  (is (= (unnamespacefy {:product.domain.person/name "Seppo"
+                         :product.domain.person/address nil})
+         {:name "Seppo"
+          :address nil}))
+  (is (= (unnamespacefy {:product.domain.person/name "Seppo"
+                         :address nil})
+         {:name "Seppo"
+          :address nil}))
+  (is (nil? (unnamespacefy nil))))
+
 (deftest unnamespacefy-bad-data
-  (is (thrown? IllegalArgumentException (unnamespacefy nil)))
-  (is (thrown? IllegalArgumentException (unnamespacefy 123))))
+  (is (thrown? IllegalArgumentException (unnamespacefy 123)))
+  (is (thrown? IllegalArgumentException (unnamespacefy "hello")))
+  (is (thrown? IllegalArgumentException (unnamespacefy \a))))
 
 ;; -- get-un
 

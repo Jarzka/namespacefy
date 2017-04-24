@@ -106,6 +106,9 @@
      (vector? data)
      (mapv #(unnamespacefy-map % options) data)
 
+     (nil? data)
+     data
+
      :default
      (throw-exception "Unsupported data, cannot unnamespacefy."))))
 
