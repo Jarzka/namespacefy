@@ -4,13 +4,11 @@
     [namespacefy.core :refer [namespacefy unnamespacefy
                               get-un assoc-un]]))
 
+;; -- Namespacefy
+
 (deftest namespacefy-keyword
   (is (= (namespacefy :address {:ns :product.domain}) :product.domain/address))
   (is (= (namespacefy :address {:ns :product.domain}) :product.domain/address)))
-
-(deftest unnamespacefy-keyword
-  (is (= (unnamespacefy :product.domain.person/address) :address))
-  (is (= (unnamespacefy :address) :address)))
 
 (deftest namespacefy-with-same-regular-keywords
   (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.person/name "Seppo"
@@ -112,6 +110,13 @@
 (deftest namespacefy-empty
   (is (= (namespacefy {} {:ns :product.domain.person}) {})))
 
+(deftest namespacefy-bad-data
+  (is (thrown? IllegalArgumentException (namespacefy nil {:ns :product.domain.person})))
+  (is (thrown? IllegalArgumentException (namespacefy 123 {:ns :product.domain.person})))
+  (is (thrown? IllegalArgumentException (namespacefy {:name "Seppo"} {}))))
+
+;; -- Unnamespacefy
+
 (deftest unnamespacefy-simple-map
   (is (= (unnamespacefy {:product.domain.person/name "Seppo"
                          :product.domain.person/id 1})
@@ -135,14 +140,15 @@
                         {:recur? true :except #{:product.domain.player/id}})
          {:name "Seppo" :product.domain.player/id 666 :task {:id 6}})))
 
-(deftest namespacefy-bad-data
-  (is (thrown? IllegalArgumentException (namespacefy nil {:ns :product.domain.person})))
-  (is (thrown? IllegalArgumentException (namespacefy 123 {:ns :product.domain.person})))
-  (is (thrown? IllegalArgumentException (namespacefy {:name "Seppo"} {}))))
+(deftest unnamespacefy-keyword
+  (is (= (unnamespacefy :product.domain.person/address) :address))
+  (is (= (unnamespacefy :address) :address)))
 
 (deftest unnamespacefy-bad-data
   (is (thrown? IllegalArgumentException (unnamespacefy nil)))
   (is (thrown? IllegalArgumentException (unnamespacefy 123))))
+
+;; -- get-un
 
 (deftest get-un-works
   ;; Basic tests
@@ -177,6 +183,8 @@
   (is (thrown? IllegalArgumentException (get-un {1 "hello"} :name)))
   (is (thrown? IllegalArgumentException (get-un {1 "hello"} 1)))
   (is (thrown? IllegalArgumentException (get-un 123 123))))
+
+;; -- assoc-un
 
 (deftest assoc-un-works
   ;; Basic tests
