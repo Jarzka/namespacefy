@@ -1,6 +1,8 @@
 # `namespacefy`
 
-[![Clojars Project](https://img.shields.io/clojars/v/namespacefy.svg)](https://clojars.org/namespacefy)
+[![Clojars Project](https://img.shields.io/clojars/v/namespacefy.svg)](https://clojars.org/namespacefy)  
+
+[API documentation](https://jarzka.github.io/namespacefy/docs/)
 
 namespacefy is a simple Clojure(Script) library which aims to make it easy to keep keys namespaced.
 
@@ -71,7 +73,7 @@ There are also other helper functions available:
 ;; => {:name "The Task 123"}
 ```
 
-For more information on the available options, please read the function documentations at the core.
+For more information on the available options, please read the [API documentation](https://jarzka.github.io/namespacefy/docs/).
 
 # Changelog
 
