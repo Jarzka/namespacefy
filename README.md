@@ -20,6 +20,10 @@ Add the following line to your Leiningen project:
 
 # Usage
 
+```clj
+(:require [namespacefy.core :as namespacefy])
+```
+
 To namespacefy a map, a keyword or a vector of maps, use the namespacefy function:
 
 ```clojure
