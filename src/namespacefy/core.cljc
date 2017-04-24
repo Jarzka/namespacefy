@@ -54,7 +54,7 @@
 (defn assoc-un
   "Assocs the data to the given keyword which matches the corresponding namespaced or
    unnamespaced keyword. The keys of the given map should be keywords and
-   there should be only one possible match.
+   there should be only one possible match, otherwise an exception is thrown.
 
    If the key is not present in the map, returns the original map."
   [map key data]
