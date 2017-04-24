@@ -15,7 +15,7 @@ When data is fetched from a database or received from an external system, the ou
 Add the following line to your Leiningen project:
 
 ```clj
-[namespacefy "0.2.3"]
+[namespacefy "0.2.4"]
 ```
 
 # Usage
