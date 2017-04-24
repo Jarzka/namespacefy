@@ -1,6 +1,8 @@
 # `namespacefy`
 
-[![Clojars Project](https://img.shields.io/clojars/v/namespacefy.svg)](https://clojars.org/namespacefy)
+[![Clojars Project](https://img.shields.io/clojars/v/namespacefy.svg)](https://clojars.org/namespacefy)  
+
+[API documentation](https://jarzka.github.io/namespacefy/docs/)
 
 namespacefy is a simple Clojure(Script) library which aims to make it easy to keep keys namespaced.
 
@@ -33,7 +35,7 @@ To namespacefy a map, a keyword or a vector of maps, use the namespacefy functio
                    :inner {:tasks {:ns :product.domain.task}}})
 
 ;; We get the following output:
-;; {:product.domain.player/name "player1"
+;; {:product.domain.player/name "Seppo"
 ;;  :product.domain.player/ip 1
 ;;  :product.domain.player/tasks {:product.domain.task/id 666
 ;;                                :product.domain.task/time 5}
@@ -71,7 +73,7 @@ There are also other helper functions available:
 ;; => {:name "The Task 123"}
 ```
 
-For more information on the available options, please read the function documentations at the core.
+For more information on the available options, please read the [API documentation](https://jarzka.github.io/namespacefy/docs/).
 
 # Changelog
 

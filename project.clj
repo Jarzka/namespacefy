@@ -6,4 +6,6 @@
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"}
   :source-paths ["src"]
-  :test-paths ["test"])
+  :test-paths ["test"]
+  :plugins [[lein-codox "0.10.3"]]
+  :codox {:output-path "docs"})
