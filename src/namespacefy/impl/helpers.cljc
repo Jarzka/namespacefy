@@ -20,12 +20,16 @@
     (throw-exception "The argument should be a keyword"))
   (keyword (name keyword-to-be-modified)))
 
-(defn- validate-map-to-be-unnamespacefyed [map-x]
+(defn- keys-in-multiple-namespaces? [map-x]
   (when-not (map? map-x) (throw-exception "Argument must be a map"))
   (let [all-keywords (set (keys map-x))
         unnamespaced-keywords (set (map unnamespacefy-keyword all-keywords))]
-    (when (not= (count all-keywords) (count unnamespaced-keywords))
-      (throw-exception "Unnamespacing would result a map with more than one keyword with the same name."))))
+    (not= (count all-keywords) (count unnamespaced-keywords))))
+
+(defn- validate-map-to-be-unnamespacefyed [map-x]
+  (when-not (map? map-x) (throw-exception "Argument must be a map"))
+  (when (keys-in-multiple-namespaces? map-x)
+    (throw-exception "Unnamespacing would result a map with more than one keyword with the same name.")))
 
 (defn- validate-map-to-be-namespacefyed [map-x options]
   (when-not (map? map-x) (throw-exception "Argument must be a map"))
