@@ -99,6 +99,16 @@
                                         {:product.domain.task/id 7
                                          :product.domain.task/description "Do something useless"}]})))
 
+(deftest namespacefy-nil
+  (is (nil? (namespacefy nil {:ns :product.domain.person})))
+  ;; Inner value is nil
+  (is (= (namespacefy {:name "Seppo"
+                       :address nil}
+                      {:ns :product.domain.person
+                       :inner {:address {:ns :product.domain.address}}})
+         {:product.domain.person/name "Seppo"
+          :product.domain.person/address nil})))
+
 (deftest namespacefy-empty
   (is (= (namespacefy {} {:ns :product.domain.person}) {})))
 
