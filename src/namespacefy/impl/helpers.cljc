@@ -67,7 +67,7 @@
     data
 
     :default
-    (throw-exception "Unsupported data, cannot namespacefy.")))
+    (throw-exception (str "Can only namespacefy keywords, maps, vectors or nil values. Got: " data))))
 
 (defn- original-keys>unnamespaced-keys [original-keys]
   (apply merge (map
@@ -110,7 +110,7 @@
      data
 
      :default
-     (throw-exception "Unsupported data, cannot unnamespacefy."))))
+     (throw-exception (str "Can only unnamespacefy keywords, maps, vectors or nil values. Got: " data)))))
 
 (defn get-un [map-x key]
   (when map-x
