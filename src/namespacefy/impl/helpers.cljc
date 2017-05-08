@@ -89,11 +89,11 @@
                                      (let [sisalto (avain map-x)]
                                        (or (map? sisalto) (vector? sisalto))))
                                    (keys map-x))
-        unnamespacefied-inner-maps (apply merge (map
-                                                  #(-> {% (unnamespacefy (% map-x))})
-                                                  keys-to-inner-maps))
         map-x-with-modified-inner-maps (if recur?
-                                         (merge map-x unnamespacefied-inner-maps)
+                                         (let [unnamespacefied-inner-maps (apply merge (map
+                                                                                         #(-> {% (unnamespacefy (% map-x))})
+                                                                                         keys-to-inner-maps))]
+                                           (merge map-x unnamespacefied-inner-maps))
                                          map-x)]
     (set/rename-keys map-x-with-modified-inner-maps original-keyword->unnamespaced-keyword)))
 

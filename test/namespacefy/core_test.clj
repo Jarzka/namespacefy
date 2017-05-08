@@ -144,7 +144,13 @@
                          :product.domain.player/id 666
                          :product.domain.player/task {:product.domain.task/id 6}}
                         {:recur? true :except #{:product.domain.player/id}})
-         {:name "Seppo" :product.domain.player/id 666 :task {:id 6}})))
+         {:name "Seppo" :product.domain.player/id 666 :task {:id 6}}))
+
+  (is (= (unnamespacefy {:stuff {:product.domain.player/name "Seppo"
+                                 :product.domain.task/name "Important task"}})
+         {:stuff {:product.domain.player/name "Seppo"
+                  :product.domain.task/name "Important task"}})
+      "No conflicts occur since there is no recur used"))
 
 (deftest unnamespacefy-keyword
   (is (= (unnamespacefy :product.domain.person/address) :address))
