@@ -120,6 +120,12 @@
 (deftest unnamespacefy-simple-map
   (is (= (unnamespacefy {:product.domain.person/name "Seppo"
                          :product.domain.person/id 1})
+         {:name "Seppo" :id 1}))
+  (is (= (unnamespacefy {:name "Seppo"
+                         :id 1})
+         {:name "Seppo" :id 1}))
+  (is (= (unnamespacefy {:product.domain.person/name "Seppo"
+                         :id 1})
          {:name "Seppo" :id 1})))
 
 (deftest unnamespacefy-nested-map
@@ -159,7 +165,8 @@
   (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.player/name "Seppo"
                                                         :product.domain.task/name "Important task"})))
   (is (thrown? IllegalArgumentException (unnamespacefy {:stuff {:product.domain.player/name "Seppo"
-                                                                :product.domain.task/name "Important task"}})))
+                                                                :product.domain.task/name "Important task"}}
+                                                       {:recur? true})))
   (is (thrown? IllegalArgumentException (unnamespacefy 123)))
   (is (thrown? IllegalArgumentException (unnamespacefy "hello")))
   (is (thrown? IllegalArgumentException (unnamespacefy \a))))
