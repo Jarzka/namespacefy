@@ -156,6 +156,10 @@
   (is (nil? (unnamespacefy nil))))
 
 (deftest unnamespacefy-bad-data
+  (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.player/name "Seppo"
+                                                        :product.domain.task/name "Important task"})))
+  (is (thrown? IllegalArgumentException (unnamespacefy {:stuff {:product.domain.player/name "Seppo"
+                                                                :product.domain.task/name "Important task"}})))
   (is (thrown? IllegalArgumentException (unnamespacefy 123)))
   (is (thrown? IllegalArgumentException (unnamespacefy "hello")))
   (is (thrown? IllegalArgumentException (unnamespacefy \a))))
