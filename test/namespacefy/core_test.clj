@@ -8,7 +8,7 @@
 
 (deftest namespacefy-keyword
   (is (= (namespacefy :address {:ns :product.domain}) :product.domain/address))
-  (is (= (namespacefy :address {:ns :product.domain}) :product.domain/address)))
+  (is (= (namespacefy :foo {:ns :domain}) :domain/foo)))
 
 (deftest namespacefy-with-same-regular-keywords
   (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.person/name "Seppo"
@@ -150,11 +150,27 @@
                                  :product.domain.task/name "Important task"}})
          {:stuff {:product.domain.player/name "Seppo"
                   :product.domain.task/name "Important task"}})
-      "No conflicts occur since there is no recur used"))
+      "No conflicts occur since recur is not used"))
 
 (deftest unnamespacefy-keyword
   (is (= (unnamespacefy :product.domain.person/address) :address))
   (is (= (unnamespacefy :address) :address)))
+
+(deftest unnamespacefy-resolving-conflicts
+  (is (= (unnamespacefy {:product.domain.person/name "Seppo"
+                         :product.domain.task/name "Important task"}
+                        {:custom {:product.domain.person/name :person-name
+                                  :product.domain.task/name :task-name}})
+         {:person-name "Seppo"
+          :task-name "Important task"}))
+  (is (= (unnamespacefy {:product.domain.person/name "Seppo"
+                         :product.domain.task/name "Important task"
+                         :product.domain.person/score 666}
+                        {:custom {:product.domain.person/name :person-name
+                                  :product.domain.task/name :task-name}})
+         {:person-name "Seppo"
+          :task-name "Important task"
+          :score 666})))
 
 (deftest unnamespacefy-nil
   (is (= (unnamespacefy {:product.domain.person/name "Seppo"
@@ -170,6 +186,19 @@
 (deftest unnamespacefy-bad-data
   (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.player/name "Seppo"
                                                         :product.domain.task/name "Important task"})))
+  (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.player/name "Seppo"
+                                                        :product.domain.task/name "Important task"}
+                                                       {:custom nil})))
+  (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.player/name "Seppo"
+                                                        :product.domain.task/name "Important task"
+                                                        :product.domain.player/id 1
+                                                        :product.domain.task/id 2}
+                                                       ;; Resolve :name conflict, but there is still :id
+                                                       {:custom {:product.domain.player/name :person-name
+                                                                 :product.domain.task/name :task-name}})))
+  (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.player/name "Seppo"
+                                                        :product.domain.task/name "Important task"}
+                                                       {:custom 123})))
   (is (thrown? IllegalArgumentException (unnamespacefy {:stuff {:product.domain.player/name "Seppo"
                                                                 :product.domain.task/name "Important task"}}
                                                        {:recur? true})))

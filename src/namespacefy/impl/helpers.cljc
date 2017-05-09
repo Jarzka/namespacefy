@@ -26,10 +26,13 @@
         unnamespaced-keywords (set (map unnamespacefy-keyword all-keywords))]
     (not= (count all-keywords) (count unnamespaced-keywords))))
 
-(defn- validate-map-to-be-unnamespacefyed [map-x]
-  (when-not (map? map-x) (throw-exception "Argument must be a map"))
-  (when (keys-in-multiple-namespaces? map-x)
-    (throw-exception "Unnamespacing would result a map with more than one keyword with the same name.")))
+(defn- validate-map-to-be-unnamespacefyed
+  ([map-x] (validate-map-to-be-unnamespacefyed map-x {}))
+  ([map-x custom-rename-logic]
+   (when-not (map? map-x) (throw-exception "Argument must be a map"))
+   (let [map-x-with-custom-names (set/rename-keys map-x custom-rename-logic)]
+     (when (keys-in-multiple-namespaces? map-x-with-custom-names)
+       (throw-exception "Unnamespacing would result a map with more than one keyword with the same name.")))))
 
 (defn- validate-map-to-be-namespacefyed [map-x options]
   (when-not (map? map-x) (throw-exception "Argument must be a map"))
@@ -79,23 +82,26 @@
                  original-keys)))
 
 (defn- unnamespacefy-map
-  [map-x {:keys [except recur?] :as options}]
-  (validate-map-to-be-unnamespacefyed map-x)
+  [map-x {:keys [except recur? custom resolve] :as options}]
+  (validate-map-to-be-unnamespacefyed map-x (or custom {}))
   (let [except (or except #{})
+        custom (or custom {})
         recur? (or recur? false)
+        resolve (or resolve {})
         keys-to-be-modified (filter (comp not except) (keys map-x))
         original-keyword->unnamespaced-keyword (original-keys>unnamespaced-keys keys-to-be-modified)
-        keys-to-inner-maps (filter (fn [avain]
-                                     (let [sisalto (avain map-x)]
-                                       (or (map? sisalto) (vector? sisalto))))
-                                   (keys map-x))
+        keys-to-inner-maps-and-vectors (filter (fn [key]
+                                                 (let [content (key map-x)]
+                                                   (or (map? content) (vector? content))))
+                                               (keys map-x))
         map-x-with-modified-inner-maps (if recur?
                                          (let [unnamespacefied-inner-maps (apply merge (map
                                                                                          #(-> {% (unnamespacefy (% map-x))})
-                                                                                         keys-to-inner-maps))]
+                                                                                         keys-to-inner-maps-and-vectors))]
                                            (merge map-x unnamespacefied-inner-maps))
-                                         map-x)]
-    (set/rename-keys map-x-with-modified-inner-maps original-keyword->unnamespaced-keyword)))
+                                         map-x)
+        final-rename-logic (merge original-keyword->unnamespaced-keyword custom)]
+    (set/rename-keys map-x-with-modified-inner-maps final-rename-logic)))
 
 (defn unnamespacefy
   ([data] (unnamespacefy data {}))

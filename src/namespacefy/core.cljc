@@ -34,7 +34,8 @@
    keyword.
 
   Options is a map with the following keywords:
-  except        Set of keywords. The name of the keywords are not modified.
+  :except       Set of keywords. The name of the keywords are not modified.
+  :custom       Map of keywords present in the given data. These keywords are named differently.
   :recur?       Unnamespacefy all keywords recursively (all nested maps and vector of maps are touched)"
   ([data] (unnamespacefy data {}))
   ([data options]
