@@ -164,13 +164,26 @@
          {:person-name "Seppo"
           :task-name "Important task"}))
   (is (= (unnamespacefy {:product.domain.person/name "Seppo"
+                         :name "foo"}
+                        {:custom {:product.domain.person/name :person-name}})
+         {:person-name "Seppo"
+          :name "foo"}))
+  (is (= (unnamespacefy {:product.domain.person/name "Seppo"
                          :product.domain.task/name "Important task"
                          :product.domain.person/score 666}
                         {:custom {:product.domain.person/name :person-name
                                   :product.domain.task/name :task-name}})
          {:person-name "Seppo"
           :task-name "Important task"
-          :score 666})))
+          :score 666}))
+  (is (= (unnamespacefy {:product.domain.person/name "Seppo"
+                         :product.domain.task/name "Important task"
+                         :name "foo"}
+                        {:custom {:product.domain.person/name :person-name
+                                  :product.domain.task/name :task-name}})
+         {:person-name "Seppo"
+          :task-name "Important task"
+          :name "foo"})))
 
 (deftest unnamespacefy-nil
   (is (= (unnamespacefy {:product.domain.person/name "Seppo"
@@ -186,6 +199,8 @@
 (deftest unnamespacefy-bad-data
   (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.player/name "Seppo"
                                                         :product.domain.task/name "Important task"})))
+  (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.player/name "Seppo"
+                                                        :name "foo"})))
   (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.player/name "Seppo"
                                                         :product.domain.task/name "Important task"}
                                                        {:custom nil})))
