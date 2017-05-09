@@ -1,6 +1,7 @@
 # `namespacefy`
 
 [![Clojars Project](https://img.shields.io/clojars/v/namespacefy.svg)](https://clojars.org/namespacefy)  
+[![CircleCI](https://circleci.com/gh/Jarzka/namespacefy.svg?style=svg)](https://circleci.com/gh/Jarzka/namespacefy)
 
 [API documentation](https://jarzka.github.io/namespacefy/docs/)
 
