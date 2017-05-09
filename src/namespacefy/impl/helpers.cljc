@@ -82,12 +82,11 @@
                  original-keys)))
 
 (defn- unnamespacefy-map
-  [map-x {:keys [except recur? custom resolve] :as options}]
+  [map-x {:keys [except recur? custom] :as options}]
   (validate-map-to-be-unnamespacefyed map-x (or custom {}))
   (let [except (or except #{})
         custom (or custom {})
         recur? (or recur? false)
-        resolve (or resolve {})
         keys-to-be-modified (filter (comp not except) (keys map-x))
         original-keyword->unnamespaced-keyword (original-keys>unnamespaced-keys keys-to-be-modified)
         keys-to-inner-maps-and-vectors (filter (fn [key]
