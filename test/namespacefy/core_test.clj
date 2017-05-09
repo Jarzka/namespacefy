@@ -84,6 +84,13 @@
           :our.ui/modified nil})))
 
 (deftest namespacefy-vector-of-maps
+  (is (= (namespacefy [{:id 6 :description "Do something useful"}
+                       {:id 7 :description "Do something useless"}]
+                      {:ns :product.domain.task})
+         [{:product.domain.task/id 6
+           :product.domain.task/description "Do something useful"}
+          {:product.domain.task/id 7
+           :product.domain.task/description "Do something useless"}]))
   (is (= (namespacefy {:name "Seppo"
                        :id 1
                        :tasks [{:id 6 :description "Do something useful"}
