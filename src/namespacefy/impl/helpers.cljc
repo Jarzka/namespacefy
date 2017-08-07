@@ -63,11 +63,17 @@
     (vector? data)
     (mapv #(namespacefy-map % options) data)
 
+    (set? data)
+    (set (map #(namespacefy-map % options) data))
+
+    (coll? data)
+    (map #(namespacefy-map % options) data)
+
     (nil? data)
     data
 
     :default
-    (throw-exception (str "Can only namespacefy keywords, maps, vectors or nil values. Got: " data))))
+    (throw-exception (str "namespacefy does not support type: " (type data) ". Value: " data))))
 
 (defn- original-keys>unnamespaced-keys [original-keys]
   (apply merge (map
@@ -110,7 +116,7 @@
      data
 
      :default
-     (throw-exception (str "Can only unnamespacefy keywords, maps, vectors or nil values. Got: " data)))))
+     (throw-exception (str "unnamespacefy does not support type: " (type data) ". Value: " data)))))
 
 (defn get-un [map-x key]
   (when map-x
