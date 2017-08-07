@@ -1,6 +1,9 @@
 # `namespacefy`
 
-[![Clojars Project](https://img.shields.io/clojars/v/namespacefy.svg)](https://clojars.org/namespacefy)
+[![Clojars Project](https://img.shields.io/clojars/v/namespacefy.svg)](https://clojars.org/namespacefy)  
+[![CircleCI](https://circleci.com/gh/Jarzka/namespacefy.svg?style=shield)](https://circleci.com/gh/Jarzka/namespacefy)
+
+[API documentation](https://jarzka.github.io/namespacefy/docs/)
 
 namespacefy is a simple Clojure(Script) library which aims to make it easy to keep keys namespaced.
 
@@ -13,10 +16,14 @@ When data is fetched from a database or received from an external system, the ou
 Add the following line to your Leiningen project:
 
 ```clj
-[namespacefy "0.2.3"]
+[namespacefy "0.3"]
 ```
 
 # Usage
+
+```clj
+(:require [namespacefy.core :as namespacefy])
+```
 
 To namespacefy a map, a keyword or a vector of maps, use the namespacefy function:
 
@@ -71,7 +78,7 @@ There are also other helper functions available:
 ;; => {:name "The Task 123"}
 ```
 
-For more information on the available options, please read the function documentations at the core.
+For more information on the available options, please read the [API documentation](https://jarzka.github.io/namespacefy/docs/).
 
 # Changelog
 

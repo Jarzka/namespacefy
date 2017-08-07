@@ -20,12 +20,19 @@
     (throw-exception "The argument should be a keyword"))
   (keyword (name keyword-to-be-modified)))
 
-(defn- validate-map-to-be-unnamespacefyed [map-x]
+(defn- keys-in-multiple-namespaces? [map-x]
   (when-not (map? map-x) (throw-exception "Argument must be a map"))
   (let [all-keywords (set (keys map-x))
         unnamespaced-keywords (set (map unnamespacefy-keyword all-keywords))]
-    (when (not= (count all-keywords) (count unnamespaced-keywords))
-      (throw-exception "Unnamespacing would result a map with more than one keyword with the same name."))))
+    (not= (count all-keywords) (count unnamespaced-keywords))))
+
+(defn- validate-map-to-be-unnamespacefyed
+  ([map-x] (validate-map-to-be-unnamespacefyed map-x {}))
+  ([map-x custom-rename-logic]
+   (when-not (map? map-x) (throw-exception "Argument must be a map"))
+   (let [map-x-with-custom-names (set/rename-keys map-x custom-rename-logic)]
+     (when (keys-in-multiple-namespaces? map-x-with-custom-names)
+       (throw-exception "Unnamespacing would result a map with more than one keyword with the same name.")))))
 
 (defn- validate-map-to-be-namespacefyed [map-x options]
   (when-not (map? map-x) (throw-exception "Argument must be a map"))
@@ -52,23 +59,6 @@
         final-rename-logic (merge original-keyword->namespaced-keyword custom)]
     (set/rename-keys map-x-with-modified-inner-maps final-rename-logic)))
 
-(defn- namespacefy-coll-item [item options]
-  (cond
-    (map? item)
-    (namespacefy-map item options)
-
-    (vector? item)
-    (mapv #(namespacefy-coll-item % options) item)
-
-    (set? item)
-    (set (map #(namespacefy-coll-item % options) item))
-
-    (coll? item)
-    (map #(namespacefy-coll-item % options) item)
-
-    :default
-    item))
-
 (defn namespacefy [data options]
   (cond
     (keyword? data)
@@ -78,19 +68,13 @@
     (namespacefy-map data options)
 
     (vector? data)
-    (mapv #(namespacefy-coll-item % options) data)
-
-    (set? data)
-    (set (map #(namespacefy-coll-item % options) data))
-
-    (coll? data)
-    (map #(namespacefy-coll-item % options) data)
+    (mapv #(namespacefy-map % options) data)
 
     (nil? data)
     data
 
     :default
-    (throw-exception (str "namespacefy does not support type: " (type data) ". Value: " data))))
+    (throw-exception (str "Can only namespacefy keywords, maps, vectors or nil values. Got: " data))))
 
 (defn- original-keys>unnamespaced-keys [original-keys]
   (apply merge (map
@@ -98,40 +82,25 @@
                  original-keys)))
 
 (defn- unnamespacefy-map
-  [map-x {:keys [except recur?] :as options}]
-  (validate-map-to-be-unnamespacefyed map-x)
+  [map-x {:keys [except recur? custom] :as options}]
+  (validate-map-to-be-unnamespacefyed map-x (or custom {}))
   (let [except (or except #{})
+        custom (or custom {})
         recur? (or recur? false)
         keys-to-be-modified (filter (comp not except) (keys map-x))
         original-keyword->unnamespaced-keyword (original-keys>unnamespaced-keys keys-to-be-modified)
-        keys-to-recur (filter (fn [key]
-                                (let [content (key map-x)]
-                                  (or (map? content) (coll? content))))
-                              (keys map-x))
-        unnamespacefied-inner-maps (apply merge (map
-                                                  #(-> {% (unnamespacefy (% map-x))})
-                                                  keys-to-recur))
+        keys-to-inner-maps-and-vectors (filter (fn [key]
+                                                 (let [content (key map-x)]
+                                                   (or (map? content) (vector? content))))
+                                               (keys map-x))
         map-x-with-modified-inner-maps (if recur?
-                                         (merge map-x unnamespacefied-inner-maps)
-                                         map-x)]
-    (set/rename-keys map-x-with-modified-inner-maps original-keyword->unnamespaced-keyword)))
-
-(defn- unnamespacefy-coll-item [item options]
-  (cond
-    (map? item)
-    (unnamespacefy-map item options)
-
-    (vector? item)
-    (mapv #(unnamespacefy-coll-item % options) item)
-
-    (set? item)
-    (set (map #(unnamespacefy-coll-item % options) item))
-
-    (coll? item)
-    (map #(unnamespacefy-coll-item % options) item)
-
-    :default
-    item))
+                                         (let [unnamespacefied-inner-maps (apply merge (map
+                                                                                         #(-> {% (unnamespacefy (% map-x))})
+                                                                                         keys-to-inner-maps-and-vectors))]
+                                           (merge map-x unnamespacefied-inner-maps))
+                                         map-x)
+        final-rename-logic (merge original-keyword->unnamespaced-keyword custom)]
+    (set/rename-keys map-x-with-modified-inner-maps final-rename-logic)))
 
 (defn unnamespacefy
   ([data] (unnamespacefy data {}))
@@ -144,19 +113,13 @@
      (unnamespacefy-map data options)
 
      (vector? data)
-     (mapv #(unnamespacefy-coll-item % options) data)
-
-     (set? data)
-     (set (map #(unnamespacefy-coll-item % options) data))
-
-     (coll? data)
-     (map #(unnamespacefy-coll-item % options) data)
+     (mapv #(unnamespacefy-map % options) data)
 
      (nil? data)
      data
 
      :default
-     (throw-exception (str "unnamespacefy does not support type: " (type data) ". Value: " data)))))
+     (throw-exception (str "Can only unnamespacefy keywords, maps, vectors or nil values. Got: " data)))))
 
 (defn get-un [map-x key]
   (when map-x
@@ -168,9 +131,11 @@
 (defn assoc-un [map-x key data]
   (if (or (nil? map-x)
           (and (map? map-x) (empty? map-x)))
-    (assoc map-x key data)
+    map-x
     (do
       (validate-map-to-be-unnamespacefyed map-x)
       (let [all-keys (keys map-x)
             best-match (first (filter #(= (unnamespacefy %) key) all-keys))]
-        (assoc map-x best-match data)))))
+        (if best-match
+          (assoc map-x best-match data)
+          map-x)))))
