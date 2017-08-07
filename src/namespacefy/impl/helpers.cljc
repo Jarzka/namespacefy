@@ -87,9 +87,9 @@
         recur? (or recur? false)
         keys-to-be-modified (filter (comp not except) (keys map-x))
         original-keyword->unnamespaced-keyword (original-keys>unnamespaced-keys keys-to-be-modified)
-        keys-to-recur (filter (fn [avain]
-                                (let [sisalto (avain map-x)]
-                                  (or (map? sisalto) (coll? sisalto))))
+        keys-to-recur (filter (fn [key]
+                                (let [content (key map-x)]
+                                  (or (map? content) (coll? content))))
                               (keys map-x))
         unnamespacefied-inner-maps (apply merge (map
                                                   #(-> {% (unnamespacefy (% map-x))})
