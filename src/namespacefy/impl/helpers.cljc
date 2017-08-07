@@ -52,6 +52,23 @@
         final-rename-logic (merge original-keyword->namespaced-keyword custom)]
     (set/rename-keys map-x-with-modified-inner-maps final-rename-logic)))
 
+(defn- namespacefy-coll-item [item options]
+  (cond
+    (map? item)
+    (namespacefy-map item options)
+
+    (vector? item)
+    (mapv #(namespacefy-coll-item % options) item)
+
+    (set? item)
+    (set (map #(namespacefy-coll-item % options) item))
+
+    (coll? item)
+    (map #(namespacefy-coll-item % options) item)
+
+    :default
+    item))
+
 (defn namespacefy [data options]
   (cond
     (keyword? data)
@@ -61,13 +78,13 @@
     (namespacefy-map data options)
 
     (vector? data)
-    (mapv #(namespacefy % options) data)
+    (mapv #(namespacefy-coll-item % options) data)
 
     (set? data)
-    (set (map #(namespacefy % options) data))
+    (set (map #(namespacefy-coll-item % options) data))
 
     (coll? data)
-    (map #(namespacefy % options) data)
+    (map #(namespacefy-coll-item % options) data)
 
     (nil? data)
     data
@@ -99,6 +116,23 @@
                                          map-x)]
     (set/rename-keys map-x-with-modified-inner-maps original-keyword->unnamespaced-keyword)))
 
+(defn- unnamespacefy-coll-item [item options]
+  (cond
+    (map? item)
+    (unnamespacefy-map item options)
+
+    (vector? item)
+    (mapv #(unnamespacefy-coll-item % options) item)
+
+    (set? item)
+    (set (map #(unnamespacefy-coll-item % options) item))
+
+    (coll? item)
+    (map #(unnamespacefy-coll-item % options) item)
+
+    :default
+    item))
+
 (defn unnamespacefy
   ([data] (unnamespacefy data {}))
   ([data options]
@@ -110,13 +144,13 @@
      (unnamespacefy-map data options)
 
      (vector? data)
-     (mapv #(unnamespacefy % options) data)
+     (mapv #(unnamespacefy-coll-item % options) data)
 
      (set? data)
-     (set (map #(unnamespacefy % options) data))
+     (set (map #(unnamespacefy-coll-item % options) data))
 
      (coll? data)
-     (map #(unnamespacefy % options) data)
+     (map #(unnamespacefy-coll-item % options) data)
 
      (nil? data)
      data
