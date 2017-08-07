@@ -116,9 +116,6 @@
                                 (let [content (key map-x)]
                                   (or (map? content) (coll? content))))
                               (keys map-x))
-        unnamespacefied-inner-maps (apply merge (map
-                                                  #(-> {% (unnamespacefy (% map-x))})
-                                                  keys-to-recur))
         map-x-with-modified-inner-maps (if recur?
                                          (let [unnamespacefied-inner-maps (apply merge (map
                                                                                          #(-> {% (unnamespacefy (% map-x))})
