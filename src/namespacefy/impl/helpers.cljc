@@ -61,13 +61,13 @@
     (namespacefy-map data options)
 
     (vector? data)
-    (mapv #(namespacefy-map % options) data)
+    (mapv #(namespacefy % options) data)
 
     (set? data)
-    (set (map #(namespacefy-map % options) data))
+    (set (map #(namespacefy % options) data))
 
     (coll? data)
-    (map #(namespacefy-map % options) data)
+    (map #(namespacefy % options) data)
 
     (nil? data)
     data
@@ -87,13 +87,13 @@
         recur? (or recur? false)
         keys-to-be-modified (filter (comp not except) (keys map-x))
         original-keyword->unnamespaced-keyword (original-keys>unnamespaced-keys keys-to-be-modified)
-        keys-to-inner-maps (filter (fn [avain]
-                                     (let [sisalto (avain map-x)]
-                                       (or (map? sisalto) (vector? sisalto))))
-                                   (keys map-x))
+        keys-to-inner-maps-or-cols (filter (fn [avain]
+                                             (let [sisalto (avain map-x)]
+                                               (or (map? sisalto) (coll? sisalto))))
+                                           (keys map-x))
         unnamespacefied-inner-maps (apply merge (map
                                                   #(-> {% (unnamespacefy (% map-x))})
-                                                  keys-to-inner-maps))
+                                                  keys-to-inner-maps-or-cols))
         map-x-with-modified-inner-maps (if recur?
                                          (merge map-x unnamespacefied-inner-maps)
                                          map-x)]
@@ -110,7 +110,13 @@
      (unnamespacefy-map data options)
 
      (vector? data)
-     (mapv #(unnamespacefy-map % options) data)
+     (mapv #(unnamespacefy % options) data)
+
+     (set? data)
+     (set (map #(unnamespacefy % options) data))
+
+     (coll? data)
+     (map #(unnamespacefy % options) data)
 
      (nil? data)
      data

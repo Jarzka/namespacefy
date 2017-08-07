@@ -164,6 +164,38 @@
                         {:recur? true :except #{:product.domain.player/id}})
          {:name "Seppo" :product.domain.player/id 666 :task {:id 6}})))
 
+(deftest unnamespacefy-coll-of-maps
+  (is (= (unnamespacefy {:product.domain.player/name "Seppo"
+                         :product.domain.player/id 1
+                         :product.domain.player/tasks [{:product.domain.task/id 6}
+                                                       {:product.domain.task/id 7}]}
+                        {:recur? true})
+         {:name "Seppo" :id 1 :tasks [{:id 6}
+                                      {:id 7}]}))
+
+  (is (= (unnamespacefy {:product.domain.player/name "Seppo"
+                         :product.domain.player/id 1
+                         :product.domain.player/tasks '({:product.domain.task/id 6}
+                                                         {:product.domain.task/id 7})}
+                        {:recur? true})
+         {:name "Seppo" :id 1 :tasks '({:id 6}
+                                        {:id 7})}))
+
+  (is (= (unnamespacefy {:product.domain.player/name "Seppo"
+                         :product.domain.player/id 1
+                         :product.domain.player/tasks #{{:product.domain.task/id 6}
+                                                        {:product.domain.task/id 7}}}
+                        {:recur? true})
+         {:name "Seppo" :id 1 :tasks #{{:id 6}
+                                       {:id 7}}}))
+
+  (is (= (unnamespacefy {:product.domain.player/name "Seppo"
+                         :product.domain.player/id 1
+                         :product.domain.player/tasks (map #(-> {:product.domain.task/id %}) [6 7])}
+                        {:recur? true})
+         {:name "Seppo" :id 1 :tasks [{:id 6}
+                                      {:id 7}]})))
+
 (deftest unnamespacefy-keyword
   (is (= (unnamespacefy :product.domain.person/address) :address))
   (is (= (unnamespacefy :address) :address)))
