@@ -83,14 +83,7 @@
           :foo nil
           :our.ui/modified nil})))
 
-(deftest namespacefy-vector-of-maps
-  (is (= (namespacefy [{:id 6 :description "Do something useful"}
-                       {:id 7 :description "Do something useless"}]
-                      {:ns :product.domain.task})
-         [{:product.domain.task/id 6
-           :product.domain.task/description "Do something useful"}
-          {:product.domain.task/id 7
-           :product.domain.task/description "Do something useless"}]))
+(deftest namespacefy-coll-of-maps
   (is (= (namespacefy {:name "Seppo"
                        :id 1
                        :tasks [{:id 6 :description "Do something useful"}
@@ -102,7 +95,66 @@
           :product.domain.person/tasks [{:product.domain.task/id 6
                                          :product.domain.task/description "Do something useful"}
                                         {:product.domain.task/id 7
-                                         :product.domain.task/description "Do something useless"}]})))
+                                         :product.domain.task/description "Do something useless"}]}))
+
+  (is (= (namespacefy {:tasks '({:id 6 :description "Do something useful"} {:id 7 :description "Do something useless"})}
+                      {:ns :product.domain.person
+                       :inner {:tasks {:ns :product.domain.task}}})
+         {:product.domain.person/tasks '({:product.domain.task/id 6
+                                          :product.domain.task/description "Do something useful"}
+                                          {:product.domain.task/id 7
+                                           :product.domain.task/description "Do something useless"})}))
+
+  (is (= (namespacefy {:tasks (map #(-> {:id %}) [1 2 3])} ;; Test lazy sequence
+                      {:ns :product.domain.person
+                       :inner {:tasks {:ns :product.domain.task}}})
+         {:product.domain.person/tasks [{:product.domain.task/id 1}
+                                        {:product.domain.task/id 2}
+                                        {:product.domain.task/id 3}]}))
+
+  (is (= (namespacefy {:tasks #{{:id 6 :description "Do something useful"}
+                                {:id 7 :description "Do something useless"}}}
+                      {:ns :product.domain.person
+                       :inner {:tasks {:ns :product.domain.task}}})
+         {:product.domain.person/tasks #{{:product.domain.task/description "Do something useful"
+                                          :product.domain.task/id 6}
+                                         {:product.domain.task/description "Do something useless"
+                                          :product.domain.task/id 7}}})))
+
+(deftest namespacefy-coll-things
+  ;; Coll of colls
+  (is (= (namespacefy {:tasks [[{:id 6 :description "Do something useful"}
+                                {:id 7 :description "Do something useless"}]
+                               [{:id 6 :description "Do something useful"}
+                                {:id 7 :description "Do something useless"}]]}
+                      {:ns :product.domain.person
+                       :inner {:tasks {:ns :product.domain.task}}})
+         {:product.domain.person/tasks [[{:product.domain.task/id 6
+                                          :product.domain.task/description "Do something useful"}
+                                         {:product.domain.task/id 7
+                                          :product.domain.task/description "Do something useless"}]
+                                        [{:product.domain.task/id 6
+                                          :product.domain.task/description "Do something useful"}
+                                         {:product.domain.task/id 7
+                                          :product.domain.task/description "Do something useless"}]]}))
+  ;; Coll of keywords should not do anything
+  (is (= (namespacefy {:tasks [:one :two :three]}
+                      {:ns :product.domain.person
+                       :inner {:tasks {:ns :product.domain.task}}})
+         {:product.domain.person/tasks [:one :two :three]}))
+
+  ;; Coll of nils should not do anything
+  (is (= (namespacefy {:tasks [nil nil nil]}
+                      {:ns :product.domain.person
+                       :inner {:tasks {:ns :product.domain.task}}})
+         {:product.domain.person/tasks [nil nil nil]}))
+
+  ;; Coll of multiple types
+  (let [object (new Object)]
+    (is (= (namespacefy {:tasks [nil :keyword object]}
+                        {:ns :product.domain.person
+                         :inner {:tasks {:ns :product.domain.task}}})
+           {:product.domain.person/tasks [nil :keyword object]}))))
 
 (deftest namespacefy-nil
   (is (nil? (namespacefy nil {:ns :product.domain.person})))
@@ -158,6 +210,66 @@
          {:stuff {:product.domain.player/name "Seppo"
                   :product.domain.task/name "Important task"}})
       "No conflicts occur since recur is not used"))
+
+(deftest unnamespacefy-coll-of-maps
+  (is (= (unnamespacefy {:product.domain.player/name "Seppo"
+                         :product.domain.player/id 1
+                         :product.domain.player/tasks [{:product.domain.task/id 6}
+                                                       {:product.domain.task/id 7}]}
+                        {:recur? true})
+         {:name "Seppo" :id 1 :tasks [{:id 6}
+                                      {:id 7}]}))
+
+  (is (= (unnamespacefy {:product.domain.player/name "Seppo"
+                         :product.domain.player/id 1
+                         :product.domain.player/tasks '({:product.domain.task/id 6}
+                                                         {:product.domain.task/id 7})}
+                        {:recur? true})
+         {:name "Seppo" :id 1 :tasks '({:id 6}
+                                        {:id 7})}))
+
+  (is (= (unnamespacefy {:product.domain.player/name "Seppo"
+                         :product.domain.player/id 1
+                         :product.domain.player/tasks #{{:product.domain.task/id 6}
+                                                        {:product.domain.task/id 7}}}
+                        {:recur? true})
+         {:name "Seppo" :id 1 :tasks #{{:id 6}
+                                       {:id 7}}}))
+
+  (is (= (unnamespacefy {:product.domain.player/name "Seppo"
+                         :product.domain.player/id 1
+                         :product.domain.player/tasks (map #(-> {:product.domain.task/id %}) [6 7])}
+                        {:recur? true})
+         {:name "Seppo" :id 1 :tasks [{:id 6}
+                                      {:id 7}]})))
+
+(deftest unnamespacefy-coll-of-things
+  ;; Coll of colls
+  (is (= (unnamespacefy {:product.domain.player/tasks [[{:product.domain.task/id 6}
+                                                        {:product.domain.task/id 7}]
+                                                       [{:product.domain.task/id 6}
+                                                        {:product.domain.task/id 7}]]}
+                        {:recur? true})
+         {:tasks [[{:id 6}
+                   {:id 7}]
+                  [{:id 6}
+                   {:id 7}]]}))
+
+  ;; Coll of keywords should not do anything
+  (is (= (unnamespacefy {:product.domain.player/tasks [:one :two :three]}
+                        {:recur? true})
+         {:tasks [:one :two :three]}))
+
+  ;; Coll of nils
+  (is (= (unnamespacefy {:product.domain.player/tasks [nil nil nil]}
+                        {:recur? true})
+         {:tasks [nil nil nil]}))
+
+  ;; Coll of multiple types
+  (let [object (new Object)]
+    (is (= (unnamespacefy {:product.domain.player/tasks [nil object :omg]}
+                          {:recur? true})
+           {:tasks [nil object :omg]}))))
 
 (deftest unnamespacefy-keyword
   (is (= (unnamespacefy :product.domain.person/address) :address))

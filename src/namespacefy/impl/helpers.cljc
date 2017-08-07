@@ -59,6 +59,23 @@
         final-rename-logic (merge original-keyword->namespaced-keyword custom)]
     (set/rename-keys map-x-with-modified-inner-maps final-rename-logic)))
 
+(defn- namespacefy-coll-item [item options]
+  (cond
+    (map? item)
+    (namespacefy-map item options)
+
+    (vector? item)
+    (mapv #(namespacefy-coll-item % options) item)
+
+    (set? item)
+    (set (map #(namespacefy-coll-item % options) item))
+
+    (coll? item)
+    (map #(namespacefy-coll-item % options) item)
+
+    :default
+    item))
+
 (defn namespacefy [data options]
   (cond
     (keyword? data)
@@ -68,13 +85,19 @@
     (namespacefy-map data options)
 
     (vector? data)
-    (mapv #(namespacefy-map % options) data)
+    (mapv #(namespacefy-coll-item % options) data)
+
+    (set? data)
+    (set (map #(namespacefy-coll-item % options) data))
+
+    (coll? data)
+    (map #(namespacefy-coll-item % options) data)
 
     (nil? data)
     data
 
     :default
-    (throw-exception (str "Can only namespacefy keywords, maps, vectors or nil values. Got: " data))))
+    (throw-exception (str "namespacefy does not support type: " (type data) ". Value: " data))))
 
 (defn- original-keys>unnamespaced-keys [original-keys]
   (apply merge (map
@@ -89,18 +112,38 @@
         recur? (or recur? false)
         keys-to-be-modified (filter (comp not except) (keys map-x))
         original-keyword->unnamespaced-keyword (original-keys>unnamespaced-keys keys-to-be-modified)
-        keys-to-inner-maps-and-vectors (filter (fn [key]
-                                                 (let [content (key map-x)]
-                                                   (or (map? content) (vector? content))))
-                                               (keys map-x))
+        keys-to-recur (filter (fn [key]
+                                (let [content (key map-x)]
+                                  (or (map? content) (coll? content))))
+                              (keys map-x))
+        unnamespacefied-inner-maps (apply merge (map
+                                                  #(-> {% (unnamespacefy (% map-x))})
+                                                  keys-to-recur))
         map-x-with-modified-inner-maps (if recur?
                                          (let [unnamespacefied-inner-maps (apply merge (map
                                                                                          #(-> {% (unnamespacefy (% map-x))})
-                                                                                         keys-to-inner-maps-and-vectors))]
+                                                                                         keys-to-recur))]
                                            (merge map-x unnamespacefied-inner-maps))
                                          map-x)
         final-rename-logic (merge original-keyword->unnamespaced-keyword custom)]
     (set/rename-keys map-x-with-modified-inner-maps final-rename-logic)))
+
+(defn- unnamespacefy-coll-item [item options]
+  (cond
+    (map? item)
+    (unnamespacefy-map item options)
+
+    (vector? item)
+    (mapv #(unnamespacefy-coll-item % options) item)
+
+    (set? item)
+    (set (map #(unnamespacefy-coll-item % options) item))
+
+    (coll? item)
+    (map #(unnamespacefy-coll-item % options) item)
+
+    :default
+    item))
 
 (defn unnamespacefy
   ([data] (unnamespacefy data {}))
@@ -113,13 +156,19 @@
      (unnamespacefy-map data options)
 
      (vector? data)
-     (mapv #(unnamespacefy-map % options) data)
+     (mapv #(unnamespacefy-coll-item % options) data)
+
+     (set? data)
+     (set (map #(unnamespacefy-coll-item % options) data))
+
+     (coll? data)
+     (map #(unnamespacefy-coll-item % options) data)
 
      (nil? data)
      data
 
      :default
-     (throw-exception (str "Can only unnamespacefy keywords, maps, vectors or nil values. Got: " data)))))
+     (throw-exception (str "unnamespacefy does not support type: " (type data) ". Value: " data)))))
 
 (defn get-un [map-x key]
   (when map-x
