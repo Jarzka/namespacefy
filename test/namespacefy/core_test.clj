@@ -26,6 +26,12 @@
          '({:product.domain.person/name "Seppo"
             :product.domain.person/id 1}))))
 
+(deftest namespacefy-lazy-sequence
+  (is (= (namespacefy (map identity [{:name "Seppo" :id 1}])
+                      {:ns :product.domain.person})
+         [{:product.domain.person/name "Seppo"
+            :product.domain.person/id 1}])))
+
 (deftest namespacefy-set
   (is (= (namespacefy #{{:name "Seppo" :id 1}}
                       {:ns :product.domain.person})
@@ -201,13 +207,18 @@
 
 (deftest unnamespacefy-coll
   (is (= (unnamespacefy '({:product.domain.person/name "Seppo"
-                         :product.domain.person/id 1}))
+                           :product.domain.person/id 1}))
          '({:name "Seppo" :id 1}))))
 
 (deftest unnamespacefy-set
   (is (= (unnamespacefy #{{:product.domain.person/name "Seppo"
                            :product.domain.person/id 1}})
          #{{:name "Seppo" :id 1}})))
+
+(deftest unnamespacefy-lazy-sequence
+  (is (= (unnamespacefy (map identity [{:product.domain.person/name "Seppo"
+                                        :product.domain.person/id 1}]))
+         [{:name "Seppo" :id 1}])))
 
 (deftest unnamespacefy-nested-map
   (is (= (unnamespacefy {:product.domain.player/name "Seppo"
