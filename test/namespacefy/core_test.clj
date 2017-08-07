@@ -14,11 +14,23 @@
   (is (thrown? IllegalArgumentException (unnamespacefy {:product.domain.person/name "Seppo"
                                                         :product.domain.task/name "Useless task"}))))
 
-(deftest namespacefy-simple-map
+(deftest namespacefy-map
   (is (= (namespacefy {:name "Seppo" :id 1}
                       {:ns :product.domain.person})
          {:product.domain.person/name "Seppo"
           :product.domain.person/id 1})))
+
+(deftest namespacefy-coll
+  (is (= (namespacefy '({:name "Seppo" :id 1})
+                      {:ns :product.domain.person})
+         '({:product.domain.person/name "Seppo"
+            :product.domain.person/id 1}))))
+
+(deftest namespacefy-set
+  (is (= (namespacefy #{{:name "Seppo" :id 1}}
+                      {:ns :product.domain.person})
+         #{{:product.domain.person/name "Seppo"
+            :product.domain.person/id 1}})))
 
 (deftest namespacefy-nested-map
   (is (= (namespacefy {:name "Seppo"
@@ -186,6 +198,16 @@
   (is (= (unnamespacefy {:product.domain.person/name "Seppo"
                          :id 1})
          {:name "Seppo" :id 1})))
+
+(deftest unnamespacefy-coll
+  (is (= (unnamespacefy '({:product.domain.person/name "Seppo"
+                         :product.domain.person/id 1}))
+         '({:name "Seppo" :id 1}))))
+
+(deftest unnamespacefy-set
+  (is (= (unnamespacefy #{{:product.domain.person/name "Seppo"
+                           :product.domain.person/id 1}})
+         #{{:name "Seppo" :id 1}})))
 
 (deftest unnamespacefy-nested-map
   (is (= (unnamespacefy {:product.domain.player/name "Seppo"
