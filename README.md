@@ -5,11 +5,11 @@
 
 [API documentation](https://jarzka.github.io/namespacefy/docs/)
 
-namespacefy is a simple Clojure(Script) library which aims to make it easy to keep keys namespaced.
+namespacefy is a simple Clojure(Script) library which aims to make it easy to keep map keys namespaced, no matter where your data comes from.
 
 # Introduction
 
-When data is fetched from a database or received from an external system, the output is often a map with unnamespaced keywords. This is often the desired end result. However, to avoid naming conflicts, it is recommended to use namespaced keywords in Clojure. This library aims to solve this problem by providing simple helper functions to convert keys in maps to namespaced keywords, no matter where your data comes from. When the namespacing is not needed anymore (for example if you want to send the data to your JSON-loving neighbour), unnamespacing the map can be done easily before JSON conversion.
+When data is fetched from a database or received from an external system, the output is often a map with unnamespaced keywords. This is often the desired end result. However, to avoid naming conflicts, it is often recommended to use namespaced keywords in Clojure. This library aims to solve this problem by providing simple helper functions to convert keys in maps to namespaced keywords, no matter where your data comes from. When the namespacing is not needed anymore (for example if you want to send the data to your JSON-loving neighbour), unnamespacing the map can be done easily before JSON conversion.
 
 # Installation
 
