@@ -41,7 +41,7 @@ You can namespacefy keywords, maps or collection types with a single *namespacef
 
 ;; We get the following output:
 ;; {:product.domain.player/name "Seppo"
-;;  :product.domain.player/ip 1
+;;  :product.domain.player/id 1
 ;;  :product.domain.player/tasks {:product.domain.task/id 666
 ;;                                :product.domain.task/time 5}
 ;;  :product.domain.point/points 7
