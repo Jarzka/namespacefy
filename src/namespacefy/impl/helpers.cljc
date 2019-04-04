@@ -9,6 +9,9 @@
   #?(:cljs (throw (js/Error. message))
      :clj  (throw (IllegalArgumentException. message))))
 
+(defn- array-list?
+  [coll]
+  (instance? java.util.ArrayList coll))
 
 (defn- namespacefy-keyword [keyword-to-be-modified {:keys [ns] :as options}]
   (when-not (keyword? keyword-to-be-modified)
@@ -64,7 +67,7 @@
     (map? item)
     (namespacefy-map item options)
 
-    (vector? item)
+    (or (vector? item) (array-list? item))
     (mapv #(namespacefy-coll-item % options) item)
 
     (set? item)
@@ -84,7 +87,7 @@
     (map? data)
     (namespacefy-map data options)
 
-    (vector? data)
+    (or (vector? data) (array-list? data))
     (mapv #(namespacefy-coll-item % options) data)
 
     (set? data)
@@ -130,7 +133,7 @@
     (map? item)
     (unnamespacefy-map item options)
 
-    (vector? item)
+    (or (vector? item) (array-list? item))
     (mapv #(unnamespacefy-coll-item % options) item)
 
     (set? item)
@@ -152,7 +155,7 @@
      (map? data)
      (unnamespacefy-map data options)
 
-     (vector? data)
+     (or (vector? data) (array-list? data))
      (mapv #(unnamespacefy-coll-item % options) data)
 
      (set? data)
