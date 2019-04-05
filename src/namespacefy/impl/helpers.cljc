@@ -11,7 +11,8 @@
 
 (defn- array-list?
   [coll]
-  (instance? java.util.ArrayList coll))
+  #?(:cljs (instance? cljs.core.ArrayList coll)
+     :clj (instance? java.util.ArrayList coll)))
 
 (defn- namespacefy-keyword [keyword-to-be-modified {:keys [ns] :as options}]
   (when-not (keyword? keyword-to-be-modified)
