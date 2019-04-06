@@ -24,7 +24,7 @@ Add the following line into your Leiningen project:
 ## Require
 
 ```clj
-(:require [namespacefy.core :as namespacefy])
+(:require [namespacefy.core :refer [namespacefy unnamespacefy]])
 ```
 
 ## Namespacefy
