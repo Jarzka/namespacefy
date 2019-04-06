@@ -13,7 +13,7 @@ When data is fetched from a database or received from an external system, the ou
 
 # Installation
 
-Add the following line to your Leiningen project:
+Add the following line into your Leiningen project:
 
 ```clj
 [namespacefy "0.5.0"]
