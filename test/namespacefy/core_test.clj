@@ -26,6 +26,12 @@
          '({:product.domain.person/name "Seppo"
             :product.domain.person/id 1}))))
 
+(deftest namespacefy-array-list
+  (is (= (namespacefy (java.util.ArrayList. [{:name "Seppo" :id 1}])
+                      {:ns :product.domain.person}))
+         '({:product.domain.person/name "Seppo"
+            :product.domain.person/id 1})))
+
 (deftest namespacefy-lazy-sequence
   (is (= (namespacefy (map identity [{:name "Seppo" :id 1}])
                       {:ns :product.domain.person})
@@ -151,10 +157,10 @@
                                           :product.domain.task/description "Do something useful"}
                                          {:product.domain.task/id 7
                                           :product.domain.task/description "Do something useless"}]
-                                        [{:product.domain.task/id 6
-                                          :product.domain.task/description "Do something useful"}
-                                         {:product.domain.task/id 7
-                                          :product.domain.task/description "Do something useless"}]]}))
+                                        (java.util.ArrayList. [{:product.domain.task/id 6
+                                                                :product.domain.task/description "Do something useful"}
+                                                               {:product.domain.task/id 7
+                                                                :product.domain.task/description "Do something useless"}])]}))
   ;; Coll of keywords should not do anything
   (is (= (namespacefy {:tasks [:one :two :three]}
                       {:ns :product.domain.person
@@ -208,6 +214,11 @@
 (deftest unnamespacefy-coll
   (is (= (unnamespacefy '({:product.domain.person/name "Seppo"
                            :product.domain.person/id 1}))
+         '({:name "Seppo" :id 1}))))
+
+(deftest unnamespacefy-array-list
+  (is (= (unnamespacefy (java.util.ArrayList. '[{:product.domain.person/name "Seppo"
+                                                :product.domain.person/id 1}]))
          '({:name "Seppo" :id 1}))))
 
 (deftest unnamespacefy-set
@@ -280,8 +291,8 @@
   ;; Coll of colls
   (is (= (unnamespacefy {:product.domain.player/tasks [[{:product.domain.task/id 6}
                                                         {:product.domain.task/id 7}]
-                                                       [{:product.domain.task/id 6}
-                                                        {:product.domain.task/id 7}]]}
+                                                       (java.util.ArrayList. [{:product.domain.task/id 6}
+                                                                              {:product.domain.task/id 7}])]}
                         {:recur? true})
          {:tasks [[{:id 6}
                    {:id 7}]

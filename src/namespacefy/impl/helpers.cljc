@@ -9,6 +9,10 @@
   #?(:cljs (throw (js/Error. message))
      :clj  (throw (IllegalArgumentException. message))))
 
+(defn- java-coll?
+  [coll]
+  #?(:cljs false
+     :clj (instance? java.util.Collection coll)))
 
 (defn- namespacefy-keyword [keyword-to-be-modified {:keys [ns] :as options}]
   (when-not (keyword? keyword-to-be-modified)
@@ -70,7 +74,7 @@
     (set? item)
     (set (map #(namespacefy-coll-item % options) item))
 
-    (coll? item)
+    (or (coll? item) (java-coll? item))
     (map #(namespacefy-coll-item % options) item)
 
     :default
@@ -90,7 +94,7 @@
     (set? data)
     (set (map #(namespacefy-coll-item % options) data))
 
-    (coll? data)
+    (or (coll? data) (java-coll? data))
     (map #(namespacefy-coll-item % options) data)
 
     (nil? data)
@@ -136,7 +140,7 @@
     (set? item)
     (set (map #(unnamespacefy-coll-item % options) item))
 
-    (coll? item)
+    (or (coll? item) (java-coll? item))
     (map #(unnamespacefy-coll-item % options) item)
 
     :default
@@ -158,7 +162,7 @@
      (set? data)
      (set (map #(unnamespacefy-coll-item % options) data))
 
-     (coll? data)
+     (or (coll? data) (java-coll? data))
      (map #(unnamespacefy-coll-item % options) data)
 
      (nil? data)
