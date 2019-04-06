@@ -9,7 +9,7 @@ namespacefy is a small and simple Clojure(Script) library which aims to make it 
 
 # Introduction
 
-When data is fetched from a database or received from an external system, the output is often a map or a collection of maps with unnamespaced keywords. This is often the desired end result. However, it is often recommended to use namespaced keywords in Clojure to avoid name conflicts and to make the meaning of keywords more clear. This library aims to solve this problem by providing a simple helper function for keyword namespacing, no matter where your data comes from. When the namespacing is not needed anymore (for example if you want to send your data into an external system), unnamespacing the map can be done easily with another simple function call.
+When data is fetched from a database or received from an external system, the output is often a map or a collection of maps with unnamespaced keywords. This is often the desired end result. However, it is often recommended to use namespaced keywords in Clojure to avoid name conflicts and to make the meaning of keywords more clear. This library aims to solve this problem by providing a simple helper function for keyword namespacing. When the namespacing is not needed anymore (for example if you want to send your data into an external system), unnamespacing the map can be done easily with another simple function call.
 
 # Installation
 
