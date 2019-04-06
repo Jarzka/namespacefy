@@ -29,7 +29,7 @@ Add the following line into your Leiningen project:
 
 ## Namespacefy
 
-You can namespacefy keywords, maps or collection types with a single *namespacefy* function:
+You can namespacefy keywords, maps or collection types with a single **namespacefy** function:
 
 ```clojure
 (def data {:name "Seppo"
@@ -55,7 +55,7 @@ You can namespacefy keywords, maps or collection types with a single *namespacef
 
 ## Unnamespacefy
 
-To unnamespacefy the same data, use the *unnamespacefy* function. It also supports keywords, maps and collections:
+To unnamespacefy the same data, use the **unnamespacefy** function. It also supports keywords, maps and collections:
 
 ```clojure
 (unnamespacefy data {:recur? true})
