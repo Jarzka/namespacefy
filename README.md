@@ -38,10 +38,11 @@ You can namespacefy keywords, maps or collection types with a single *namespacef
            :points 7
            :foobar nil})
 
-(namespacefy data {:ns :product.domain.player ; Base namespace for all keywords
-                   :except #{:foobar} ; Exceptions, do not namespacefy these keywords
-                   :custom {:points :product.domain.point/points} ; Namespacefy these keywords differently
-                   :inner {:tasks {:ns :product.domain.task}}}) ; How to handle keywords that contain collections or maps
+(namespacefy data 
+  {:ns :product.domain.player ; Base namespace for all keywords
+   :except #{:foobar} ; Exceptions, do not namespacefy these keywords
+   :custom {:points :product.domain.point/points} ; Namespacefy these keywords differently
+   :inner {:tasks {:ns :product.domain.task}}}) ; How to handle keywords that contain collections or maps
 
 ;; We get the following output:
 ;; {:product.domain.player/name "Seppo"
