@@ -58,7 +58,7 @@ You can namespacefy keywords, maps or collection types with a single **namespace
 To unnamespacefy the same data, use the **unnamespacefy** function. It also supports keywords, maps and collections:
 
 ```clojure
-(unnamespacefy data {:recur? true})
+(unnamespacefy data {:recur? true}) ; recur = all nested maps and vector of maps are unnamespacefied
 
 ;; We get the following output:
 ;; {:name "Seppo"
