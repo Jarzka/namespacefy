@@ -1,5 +1,5 @@
 <p align="center">
-  <img align="center" width="200" src="namespacefy_logo.png" alt="">
+  <img align="center" width="300" src="namespacefy_logo.png" alt="">
 </p>
 
 <p align="center">Namespacing data with ease.</p>
