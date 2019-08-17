@@ -2,7 +2,7 @@
   <img align="center" width="320" src="namespacefy_logo.png" alt="">
 </p>
 
-<p align="center">Namespacing data with ease.</p>
+<p align="center">Namespacing Clojure(Script) data with ease.</p>
 
 [![Clojars Project](https://img.shields.io/clojars/v/namespacefy.svg)](https://clojars.org/namespacefy)  
 [![CircleCI](https://circleci.com/gh/Jarzka/namespacefy.svg?style=shield)](https://circleci.com/gh/Jarzka/namespacefy)
