@@ -1,5 +1,8 @@
 <p align="center">
-  <img align="center" width="320" src="namespacefy_logo.png" alt="">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="namespacefy_logo_darkmode.png">
+    <img alt="namespacefy logo" src="namespacefy_logo.png">
+  </picture>
 </p>
 
 <p align="center">Namespacing Clojure(Script) data with ease.</p>
