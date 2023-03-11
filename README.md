@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="namespacefy_logo_darkmode.png">
-    <img alt="namespacefy logo" src="namespacefy_logo.png">
+    <img alt="namespacefy logo" width="320" src="namespacefy_logo.png">
   </picture>
 </p>
 
